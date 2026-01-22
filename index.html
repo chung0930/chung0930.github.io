@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小故事工坊 - 官方入口網</title>
+    <style>
+        :root {
+            --primary-color: #333;
+            --accent-color: #007bff;
+            --bg-color: #f4f6f8;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", "Heiti TC", sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            line-height: 1.6;
+        }
+
+        /* --- 導覽列 --- */
+        nav {
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        nav h1 { margin: 0; font-size: 1.5rem; }
+        nav ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 20px; }
+        nav a { text-decoration: none; color: #555; font-weight: bold; transition: 0.3s; }
+        nav a:hover { color: var(--accent-color); }
+
+        /* --- 跑馬燈區塊 (Marquee) --- */
+        #marquee-section {
+            background-color: #222;
+            color: #fff;
+            height: 60px; /* 限制高度 */
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        #scroller {
+            white-space: nowrap;
+            position: absolute;
+            font-weight: bold;
+            font-size: 24px;
+            will-change: transform;
+        }
+
+        /* --- 主要內容區 Grid --- */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card h2 { margin-top: 0; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; font-size: 1.25rem; }
+
+        /* --- 每日金句樣式 --- */
+        .quote-content { text-align: center; padding: 20px 0; }
+        #q-text { font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem; min-height: 3em; }
+        #q-author { color: #666; font-style: italic; }
+        .quote-btn {
+            background-color: #333; color: #fff; border: none; padding: 8px 20px;
+            border-radius: 20px; cursor: pointer; margin-top: 10px;
+        }
+        .quote-btn:disabled { background-color: #ccc; }
+
+        /* --- AI 聊天室樣式 --- */
+        .chat-box {
+            background: #f9f9f9;
+            border-radius: 8px;
+            height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #eee;
+        }
+        .msg { padding: 8px 12px; border-radius: 10px; margin-bottom: 8px; max-width: 80%; word-wrap: break-word; font-size: 0.9rem; }
+        .msg.user { background: #d1e7ff; margin-left: auto; border-bottom-right-radius: 2px; }
+        .msg.bot { background: #ffeecf; margin-right: auto; border-bottom-left-radius: 2px; }
+        .chat-input-area { display: flex; gap: 5px; }
+        .chat-input-area input { flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        .chat-input-area button { padding: 8px 15px; background: #246bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+
+        /* --- 加密工具樣式 --- */
+        .crypto-box input { width: 100%; margin-bottom: 10px; padding: 8px; box-sizing: border-box; }
+        .crypto-btn { width: 100%; padding: 10px; margin-bottom: 5px; border: none; cursor: pointer; color: white; border-radius: 4px; }
+        .btn-encrypt { background-color: #007bff; }
+        .btn-decrypt { background-color: #28a745; }
+        #crypto-status { margin-top: 10px; font-size: 0.9rem; font-weight: bold; }
+        #crypto-preview img { max-width: 100%; margin-top: 10px; border: 1px solid #ddd; }
+
+        /* --- 故事連結列表 --- */
+        .story-list ul { list-style: none; padding: 0; }
+        .story-list li { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+        .story-list a { text-decoration: none; color: #333; display: block; }
+        .story-list a:hover { color: var(--accent-color); padding-left: 5px; }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: #fff;
+            color: #666;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <h1>小故事工坊</h1>
+        <ul>
+            <li><a href="#home">首頁</a></li>
+            <li><a href="#stories">作品集</a></li>
+            <li><a href="#" onclick="alert('股市功能需獨立全螢幕運行，此為單頁演示。')">虛擬股市</a></li>
+            <li><a href="https://docs.google.com/forms/d/1vSmn923Mdf3BVDimeJkyxZaa9-W2PevwTVyPQZrmwWc/edit?usp=drivesdk" target="_blank">意見回饋</a></li>
+        </ul>
+    </nav>
+
+    <div id="marquee-section">
+        <div id="scroller">載入公告中...</div>
+    </div>
+
+    <div class="container" id="home">
+        
+        <div class="card">
+            <h2>📜 每日金句</h2>
+            <div class="quote-content">
+                <div id="q-text">載入中...</div>
+                <div id="q-author"></div>
+                <button class="quote-btn" onclick="fetchQuote()" id="q-btn">換一句</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🤖 Chat Big GG AI</h2>
+            <div class="chat-box" id="messages">
+                <div class="msg bot">您好，這是一個 AI，輸入任意文字後按送出。</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="輸入訊息...">
+                <button onclick="handleChatSend()">送出</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔒 檔案加密/解鎖 (V2)</h2>
+            <div class="crypto-box">
+                <label>1. 選擇檔案：</label>
+                <input type="file" id="fileInput">
+                <label>2. 輸入密碼：</label>
+                <input type="password" id="cryptoPwd" placeholder="請輸入強密碼">
+                
+                <button class="crypto-btn btn-encrypt" onclick="processFile('encrypt')">🔒 加密並下載</button>
+                <button class="crypto-btn btn-decrypt" onclick="processFile('decrypt')">🔓 解鎖並顯示</button>
+                
+                <div id="crypto-status"></div>
+                <div id="crypto-preview"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="container" id="stories">
+        <div class="card" style="grid-column: 1 / -1;">
+            <h2>📚 故事與資源下載</h2>
+            <div class="story-list">
+                <ul>
+                    <li><a href="https://drive.google.com/embeddedfolderview?id=1CAnvbMg3CB3a29L_2hxmcj0TKLvxSuBz#list" target="_blank">📂 小故事工坊雲端硬碟 V.2</a></li>
+                    <li><a href="https://drive.google.com/open?id=1zmbPTlcGtdY7dvLciyAJFdjCNNYFR3W4QXJVa1tXTjg" target="_blank">📖 潘誼璇與蔡吉紳的愛情日記.1</a></li>
+                    <li><a href="https://drive.google.com/open?id=1io-24uCInuiY4H4M_eSG3Hq3BXpoCMBAg_3qsfGxy6o" target="_blank">📖 人妖與田語桐</a></li>
+                    <li><a href="https://drive.google.com/open?id=1012yaF5SwUIAK5jY3Q_fxDAcK_Y35e8yMkugRTgXrD4" target="_blank">📖 徐子浩外遇故事</a></li>
+                    <li><a href="https://drive.google.com/file/d/1n5QmmVQr8RDSo7cZQWz5hf5gnDwlebiq/view?usp=drivesdk" target="_blank">🎮 不要打我 (巫凱特製作)</a></li>
+                    <li><a href="https://drive.google.com/open?id=1_0KHaGjk-1kG66hOS9rfRBMlTGHA872bE9OND11MiDA" target="_blank">🔒 馬與骨的愛情史.1 (加密版)</a></li>
+                    <li><a href="https://drive.google.com/open?id=11Fqc9u1XPx-z_D2sIIE2MeIuWDaqJAsOv7AX6ZOOa3Q" target="_blank">💔 林郁翔與馮亭閏的愛恨情仇</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Copyright © 小故事工坊. 此網頁為模擬還原版本。</p>
+        <p>聯絡信箱：mzhong109002@gamil.com</p>
+    </footer>
+
+    <script>
+        // ==========================================
+        // 1. 跑馬燈邏輯 (Marquee)
+        // ==========================================
+        const MARQUEE_API = "https://script.google.com/macros/s/AKfycbxRIYaYtUjoJRa8OlciCuHs28cjqeaSsXsNUPgnE07sABOCWP_s4bbubGc8oDycaS14vQ/exec";
+        const scroller = document.getElementById('scroller');
+        const marqueeContainer = document.getElementById('marquee-section');
+        let currentPlaylist = [];
+        let marqueeIndex = 0;
+
+        function initMarquee() {
+            fetch(MARQUEE_API)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.items) {
+                        currentPlaylist = data.items;
+                        // 套用設定背景色 (如果有)
+                        if(data.settings && data.settings.BgColor) {
+                            // 注意：這裡只改跑馬燈區塊背景，不改 Body
+                            marqueeContainer.style.backgroundColor = data.settings.BgColor;
+                        }
+                        playNextMarquee();
+                    } else {
+                        scroller.innerText = "暫無公告";
+                    }
+                })
+                .catch(() => scroller.innerText = "無法連線至公告伺服器");
+        }
+
+        function playNextMarquee() {
+            if (currentPlaylist.length === 0) return;
+            if (marqueeIndex >= currentPlaylist.length) marqueeIndex = 0;
+
+            const item = currentPlaylist[marqueeIndex];
+            scroller.innerText = item.text;
+            scroller.style.color = item.color || '#fff';
+            
+            // 簡單的動畫模擬
+            const containerWidth = marqueeContainer.offsetWidth;
+            const textWidth = scroller.offsetWidth;
+            let pos = containerWidth;
+            
+            scroller.style.transform = `translateX(${pos}px)`;
+            scroller.style.transition = 'none';
+
+            requestAnimationFrame(() => {
+                // 根據字數決定速度，簡單模擬
+                const speed = 2; 
+                function step() {
+                    pos -= speed;
+                    scroller.style.transform = `translateX(${pos}px)`;
+                    if (pos < -textWidth) {
+                        marqueeIndex++;
+                        playNextMarquee();
+                    } else {
+                        requestAnimationFrame(step);
+                    }
+                }
+                step();
+            });
+        }
+
+        // ==========================================
+        // 2. 每日金句邏輯
+        // ==========================================
+        const QUOTE_API = "https://script.google.com/macros/s/AKfycby3_BfpuqHlW0MtDyccQzu-UwFCLktYsTbtoRCLpE8nWdz2XfUBbMdeV1QTkZf7qofu2Q/exec";
+        
+        function fetchQuote() {
+            const btn = document.getElementById('q-btn');
+            const textEl = document.getElementById('q-text');
+            const authorEl = document.getElementById('q-author');
+
+            btn.disabled = true;
+            btn.innerText = "讀取中...";
+            textEl.style.opacity = 0;
+            authorEl.style.opacity = 0;
+
+            fetch(QUOTE_API)
+                .then(res => res.json())
+                .then(data => {
+                    setTimeout(() => {
+                        textEl.innerText = data.text;
+                        authorEl.innerText = "— " + (data.author || "佚名");
+                        textEl.style.opacity = 1;
+                        authorEl.style.opacity = 1;
+                        btn.disabled = false;
+                        btn.innerText = "換一句";
+                    }, 500);
+                })
+                .catch(err => {
+                    textEl.innerText = "網路錯誤或 API 限制";
+                    textEl.style.opacity = 1;
+                    btn.disabled = false;
+                    btn.innerText = "重試";
+                });
+        }
+
+        // ==========================================
+        // 3. AI 聊天邏輯 (固定回覆)
+        // ==========================================
+        const FIXED_REPLY = '林郁翔愛田語桐'; // 來自原程式碼 source: 292
+        
+        function handleChatSend() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            addMessage(text, 'user');
+            input.value = '';
+
+            setTimeout(() => {
+                addMessage(FIXED_REPLY, 'bot');
+            }, 300);
+        }
+
+        function addMessage(text, type) {
+            const container = document.getElementById('messages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `msg ${type}`;
+            msgDiv.innerText = text;
+            container.appendChild(msgDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // ==========================================
+        // 4. 檔案加密/解鎖工具 (V2)
+        // ==========================================
+        const HEADER_SEPARATOR = '::MIME::';
+
+        async function processFile(mode) {
+            const statusDiv = document.getElementById('crypto-status');
+            const previewDiv = document.getElementById('crypto-preview');
+            const fileInput = document.getElementById('fileInput');
+            const password = document.getElementById('cryptoPwd').value;
+            const file = fileInput.files[0];
+
+            statusDiv.innerText = '';
+            previewDiv.innerHTML = '';
+
+            if (!file) return alert('請先選擇檔案！');
+            if (!password) return alert('請輸入密碼！');
+
+            statusDiv.innerText = '處理中...';
+
+            try {
+                const fileBuffer = await file.arrayBuffer();
+                let resultBuffer, resultName, mimeType = 'application/octet-stream';
+
+                if (mode === 'encrypt') {
+                    const originalMime = file.type || 'application/octet-stream';
+                    const header = `${originalMime}${HEADER_SEPARATOR}`;
+                    const headerBuffer = new TextEncoder().encode(header);
+                    
+                    const contentWithHeader = new Uint8Array(headerBuffer.length + fileBuffer.byteLength);
+                    contentWithHeader.set(headerBuffer, 0);
+                    contentWithHeader.set(new Uint8Array(fileBuffer), headerBuffer.length);
+
+                    const salt = window.crypto.getRandomValues(new Uint8Array(16));
+                    const iv = window.crypto.getRandomValues(new Uint8Array(12));
+                    const key = await deriveKey(password, salt);
+                    
+                    const encryptedContent = await window.crypto.subtle.encrypt(
+                        { name: "AES-GCM", iv: iv }, key, contentWithHeader.buffer
+                    );
+
+                    const combinedBuffer = new Uint8Array(salt.byteLength + iv.byteLength + encryptedContent.byteLength);
+                    combinedBuffer.set(salt, 0);
+                    combinedBuffer.set(iv, 16);
+                    combinedBuffer.set(new Uint8Array(encryptedContent), 28);
+                    
+                    resultBuffer = combinedBuffer;
+                    resultName = file.name + ".enc";
+
+                } else {
+                    // 解密
+                    const salt = new Uint8Array(fileBuffer.slice(0, 16));
+                    const iv = new Uint8Array(fileBuffer.slice(16, 28));
+                    const data = fileBuffer.slice(28);
+                    const key = await deriveKey(password, salt);
+
+                    try {
+                        const decryptedBuffer = await window.crypto.subtle.decrypt(
+                            { name: "AES-GCM", iv: iv }, key, data
+                        );
+                        const decryptedData = new Uint8Array(decryptedBuffer);
+                        
+                        // 尋找 MIME 分隔符
+                        let separatorPos = -1;
+                        for(let i=0; i < decryptedData.length - HEADER_SEPARATOR.length; i++) {
+                            const segment = new TextDecoder().decode(decryptedData.slice(i, i + HEADER_SEPARATOR.length));
+                            if(segment === HEADER_SEPARATOR) {
+                                separatorPos = i;
+                                break;
+                            }
+                        }
+
+                        if (separatorPos === -1) {
+                             resultBuffer = decryptedBuffer;
+                             resultName = file.name.replace(".enc", "");
+                        } else {
+                            const mimeHeader = new TextDecoder().decode(decryptedData.slice(0, separatorPos));
+                            mimeType = mimeHeader;
+                            resultBuffer = decryptedBuffer.slice(separatorPos + HEADER_SEPARATOR.length);
+                            resultName = file.name.replace(".enc", "");
+                        }
+
+                    } catch (e) {
+                        throw new Error("密碼錯誤或檔案損壞");
+                    }
+                }
+
+                downloadAndDisplay(resultBuffer, resultName, mimeType, previewDiv);
+                statusDiv.innerText = `✅ ${mode === 'encrypt' ? '加密' : '解鎖'} 完成！`;
+
+            } catch (error) {
+                console.error(error);
+                statusDiv.innerText = '❌ 錯誤：' + error.message;
+            }
+        }
+
+        async function deriveKey(password, salt) {
+            const enc = new TextEncoder();
+            const keyMaterial = await window.crypto.subtle.importKey(
+                "raw", enc.encode(password), { name: "PBKDF2" }, false, ["deriveKey"]
+            );
+            return window.crypto.subtle.deriveKey(
+                { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
+                keyMaterial, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]
+            );
+        }
+
+        function downloadAndDisplay(data, filename, mimeType, container) {
+            const blob = new Blob([data], { type: mimeType });
+            const url = window.URL.createObjectURL(blob);
+            
+            if (mimeType.startsWith('image/')) {
+                container.innerHTML = `<h4>圖片預覽：</h4><img src="${url}" alt="Preview">`;
+            }
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.innerText = `點擊下載: ${filename}`;
+            a.style.display = 'block';
+            a.style.marginTop = '10px';
+            a.className = "quote-btn"; // 复用按钮样式
+            a.style.textAlign = "center";
+            a.style.textDecoration = "none";
+            container.appendChild(a);
+        }
+
+        // ==========================================
+        // 初始化所有功能
+        // ==========================================
+        window.onload = function() {
+            initMarquee();
+            fetchQuote();
+            
+            // 綁定聊天室 Enter 鍵
+            document.getElementById('chatInput').addEventListener('keydown', function(e){
+                if(e.key === 'Enter') handleChatSend();
+            });
+        };
+    </script>
+</body>
+</html>

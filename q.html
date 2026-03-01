@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>      </title>
+    <script type="text/javascript">
+        // 1. 首先，將目前這頁在瀏覽器紀錄中的位置，替換成你想要的「返回目標」
+        // 這樣當使用者按返回時，瀏覽器會認為上一頁是這個網址
+        window.history.replaceState(null, null, "https://chung0930.github.io");
+
+        // 2. 接著，使用 location.href 正常跳轉到 Google Sites
+        // 注意：這裡不能用 replace()，必須用 href，才能在歷史紀錄中堆疊一層
+        window.location.href = "https://sites.google.com/view/pig-p-ha-ha/iofh";
+    </script>
+</head>
+<body>
+</body>
+</html>

@@ -8,14 +8,16 @@
   OneSignalDeferred.push(async function(OneSignal) {
     await OneSignal.init({
       appId: "f54b840a-7435-427b-9d67-0b42a4056778",
-      // 因為在根目錄，這兩行可以更簡單或直接省略
-      serviceWorkerPath: "OneSignalSDKWorker.js",
-      serviceWorkerParam: { scope: "/" } 
+      allowLocalhostAsSecureOrigin: true, // 增加相容性
     });
+    
+    // 強制在進入頁面時要求權限
+    OneSignal.Notifications.requestPermission();
   });
 </script>
 </head>
 <body>
     <p>豬皮速報</p>
+    <button onclick="OneSignal.Notifications.requestPermission()">點我開啟通知</button>
 </body>
 </html>

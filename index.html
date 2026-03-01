@@ -8,6 +8,9 @@
   OneSignalDeferred.push(async function(OneSignal) {
     await OneSignal.init({
       appId: "f54b840a-7435-427b-9d67-0b42a4056778",
+      // 因為在根目錄，這兩行可以更簡單或直接省略
+      serviceWorkerPath: "OneSignalSDKWorker.js",
+      serviceWorkerParam: { scope: "/" } 
     });
   });
 </script>

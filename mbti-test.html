@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全能 MBTI 深度測試系統 | 探索真實的自我</title>
+    <!-- 引入 Tailwind CSS 以實現高度客製化且美觀的響應式介面 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 FontAwesome 圖示庫 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 自定義字體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans TC"', 'sans-serif'],
+                    },
+                    colors: {
+                        agree: '#10b981', // 強烈同意的顏色 (綠色系)
+                        disagree: '#8b5cf6', // 強烈不同意的顏色 (紫色系)
+                        neutral: '#9ca3af', // 中立顏色
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* 自定義全域樣式與動畫，為了不精簡程式碼，我們在此詳細定義多種動畫狀態 */
+        body {
+            background-color: #f3f4f6;
+            color: #1f2937;
+            overflow-x: hidden;
+        }
+
+        /* 視圖切換動畫：淡入淡出並帶有輕微位移 */
+        .view-section {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .view-section.active {
+            display: block;
+            animation: slideUpFadeIn 0.6s forwards;
+        }
+
+        @keyframes slideUpFadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 選項按鈕的精美樣式設計 */
+        .option-btn {
+            appearance: none;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            outline: none;
+            display: inline-block;
+        }
+
+        /* 針對不同程度的選項設定不同的大小與顏色 */
+        /* 同意方 (綠色) */
+        .option-agree-3 { width: 64px; height: 64px; border-color: #10b981; }
+        .option-agree-2 { width: 50px; height: 50px; border-color: #34d399; }
+        .option-agree-1 { width: 40px; height: 40px; border-color: #6ee7b7; }
+        
+        /* 中立 (灰色) */
+        .option-neutral { width: 34px; height: 34px; border-color: #9ca3af; }
+
+        /* 不同意方 (紫色) */
+        .option-disagree-1 { width: 40px; height: 40px; border-color: #c4b5fd; }
+        .option-disagree-2 { width: 50px; height: 50px; border-color: #a78bfa; }
+        .option-disagree-3 { width: 64px; height: 64px; border-color: #8b5cf6; }
+
+        /* Hover 狀態：填滿顏色 */
+        .option-agree-3:hover { background-color: #10b981; transform: scale(1.1); }
+        .option-agree-2:hover { background-color: #34d399; transform: scale(1.1); }
+        .option-agree-1:hover { background-color: #6ee7b7; transform: scale(1.1); }
+        .option-neutral:hover { background-color: #9ca3af; transform: scale(1.1); }
+        .option-disagree-1:hover { background-color: #c4b5fd; transform: scale(1.1); }
+        .option-disagree-2:hover { background-color: #a78bfa; transform: scale(1.1); }
+        .option-disagree-3:hover { background-color: #8b5cf6; transform: scale(1.1); }
+
+        /* 選中狀態：完全填滿並帶有陰影 */
+        .selected.option-agree-3 { background-color: #10b981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.5); border-width: 4px; }
+        .selected.option-agree-2 { background-color: #34d399; box-shadow: 0 0 10px rgba(52, 211, 153, 0.5); border-width: 4px; }
+        .selected.option-agree-1 { background-color: #6ee7b7; border-width: 4px; }
+        .selected.option-neutral { background-color: #9ca3af; border-width: 4px; }
+        .selected.option-disagree-1 { background-color: #c4b5fd; border-width: 4px; }
+        .selected.option-disagree-2 { background-color: #a78bfa; box-shadow: 0 0 10px rgba(167, 139, 250, 0.5); border-width: 4px; }
+        .selected.option-disagree-3 { background-color: #8b5cf6; box-shadow: 0 0 15px rgba(139, 92, 246, 0.5); border-width: 4px; }
+
+        /* 加載動畫 */
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #8b5cf6;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 屬性條動畫 */
+        .bar-fill {
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 響應式調整 */
+        @media (max-width: 640px) {
+            .options-container {
+                gap: 0.5rem !important;
+            }
+            .option-agree-3, .option-disagree-3 { width: 48px; height: 48px; }
+            .option-agree-2, .option-disagree-2 { width: 40px; height: 40px; }
+            .option-agree-1, .option-disagree-1 { width: 32px; height: 32px; }
+            .option-neutral { width: 28px; height: 28px; }
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col relative">
+
+    <!-- 背景裝飾 -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
+        <div class="absolute top-[20%] right-[-10%] w-[50%] h-[50%] bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+        <div class="absolute bottom-[-20%] left-[20%] w-[60%] h-[60%] bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-4000"></div>
+    </div>
+
+    <!-- 頂部導航列 -->
+    <header class="bg-white shadow-sm py-4 sticky top-0 z-50">
+        <div class="container mx-auto px-4 flex justify-between items-center max-w-5xl">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="location.reload()">
+                <i class="fa-solid fa-brain text-purple-600 text-2xl"></i>
+                <span class="font-bold text-xl tracking-wider text-gray-800">MBTI Ultimate</span>
+            </div>
+            <div class="text-sm text-gray-500 font-medium">全方位性格探索系統 v2.0</div>
+        </div>
+    </header>
+
+    <!-- 主體內容區 -->
+    <main class="flex-grow flex flex-col items-center justify-center p-4 container mx-auto max-w-4xl relative">
+        
+        <!-- ========================================== -->
+        <!-- 視圖 1: 歡迎畫面 (Welcome Screen)          -->
+        <!-- ========================================== -->
+        <section id="view-welcome" class="view-section active w-full bg-white rounded-3xl shadow-xl overflow-hidden">
+            <div class="flex flex-col md:flex-row">
+                <div class="md:w-1/2 bg-gradient-to-br from-purple-600 to-indigo-800 text-white p-10 flex flex-col justify-center">
+                    <h1 class="text-4xl md:text-5xl font-black mb-4 leading-tight">探索您<br>真實的潛能。</h1>
+                    <p class="text-lg opacity-90 mb-8 leading-relaxed">
+                        這不是一個簡單的測驗。我們準備了 40 道深度情境題，透過多維度分析演算法，精確剖析您的性格光譜，揭示您的優勢、盲點、適合的職涯與人際關係模式。
+                    </p>
+                    <div class="flex gap-4 mb-4">
+                        <div class="flex items-center gap-2"><i class="fa-regular fa-clock"></i> <span>約需 10 分鐘</span></div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-clipboard-question"></i> <span>40 題深度解析</span></div>
+                    </div>
+                </div>
+                <div class="md:w-1/2 p-10 flex flex-col justify-center items-center bg-gray-50">
+                    <div class="mb-8 text-center">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">測驗指南</h2>
+                        <ul class="text-left text-gray-600 space-y-3 mt-4">
+                            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-green-500 mt-1"></i> <span>請選擇您<b>最自然的反應</b>，而非您「希望」成為的樣子。</span></li>
+                            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-green-500 mt-1"></i> <span>盡量<b>避免選擇「中立」</b>，除非您真的完全無法決定。</span></li>
+                            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-green-500 mt-1"></i> <span>憑直覺作答，不要在同一題上思考過久。</span></li>
+                        </ul>
+                    </div>
+                    <button onclick="startTest()" class="w-full py-4 bg-purple-600 hover:bg-purple-700 text-white text-xl font-bold rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">
+                        開始深度測試 <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 視圖 2: 測驗畫面 (Quiz Screen)             -->
+        <!-- ========================================== -->
+        <section id="view-quiz" class="view-section w-full max-w-3xl">
+            <!-- 進度條 -->
+            <div class="bg-white p-6 rounded-t-3xl shadow-sm mb-1">
+                <div class="flex justify-between text-sm font-bold text-gray-500 mb-2">
+                    <span id="progress-text">進度: 0%</span>
+                    <span id="question-counter">1 / 40</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                    <div id="progress-bar" class="bg-gradient-to-r from-green-400 to-purple-500 h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- 問題卡片 -->
+            <div class="bg-white p-8 md:p-12 rounded-b-3xl shadow-lg text-center min-h-[400px] flex flex-col justify-center relative">
+                
+                <!-- 上一題按鈕 -->
+                <button onclick="prevQuestion()" id="btn-prev" class="absolute top-4 left-4 text-gray-400 hover:text-gray-700 hidden transition-colors">
+                    <i class="fa-solid fa-arrow-left mr-1"></i> 上一題
+                </button>
+
+                <h2 id="question-text" class="text-2xl md:text-3xl font-bold text-gray-800 mb-10 leading-relaxed transition-opacity duration-300">
+                    載入問題中...
+                </h2>
+
+                <!-- 選擇區 (強烈同意 -> 強烈不同意) -->
+                <div class="flex flex-col items-center w-full">
+                    <div class="flex justify-between w-full max-w-lg mb-4 px-2 text-sm md:text-base font-bold">
+                        <span class="text-agree">同意</span>
+                        <span class="text-disagree">不同意</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center w-full max-w-lg options-container gap-2 md:gap-4 px-2" id="options-group">
+                        <!-- 動態生成按鈕，包含數值 3, 2, 1, 0, -1, -2, -3 -->
+                        <!-- 點擊時呼叫 handleAnswer(value) -->
+                        <button class="option-btn option-agree-3" onclick="handleAnswer(3)" aria-label="強烈同意"></button>
+                        <button class="option-btn option-agree-2" onclick="handleAnswer(2)" aria-label="同意"></button>
+                        <button class="option-btn option-agree-1" onclick="handleAnswer(1)" aria-label="稍微同意"></button>
+                        <button class="option-btn option-neutral" onclick="handleAnswer(0)" aria-label="中立"></button>
+                        <button class="option-btn option-disagree-1" onclick="handleAnswer(-1)" aria-label="稍微不同意"></button>
+                        <button class="option-btn option-disagree-2" onclick="handleAnswer(-2)" aria-label="不同意"></button>
+                        <button class="option-btn option-disagree-3" onclick="handleAnswer(-3)" aria-label="強烈不同意"></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 視圖 3: 計算中畫面 (Loading Screen)        -->
+        <!-- ========================================== -->
+        <section id="view-loading" class="view-section w-full text-center py-20 bg-white rounded-3xl shadow-xl">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">正在分析您的性格模型...</h2>
+            <div class="loader mb-6"></div>
+            <p class="text-gray-500 text-lg animate-pulse" id="loading-text">比對幾千種變數特徵中...</p>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 視圖 4: 結果畫面 (Result Screen)           -->
+        <!-- ========================================== -->
+        <section id="view-result" class="view-section w-full bg-white rounded-3xl shadow-2xl overflow-hidden">
+            <!-- 結果頭部：顯示四碼與稱號 -->
+            <div class="bg-gradient-to-r from-gray-900 to-gray-800 text-white p-10 text-center relative overflow-hidden">
+                <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+                <div class="relative z-10">
+                    <p class="text-xl text-gray-300 mb-2 font-medium tracking-widest uppercase">您的性格類型是</p>
+                    <h1 id="result-type" class="text-7xl md:text-8xl font-black mb-2 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">INTJ</h1>
+                    <h2 id="result-title" class="text-3xl md:text-4xl font-bold mb-4">- 建築師 -</h2>
+                    <p id="result-quote" class="text-lg md:text-xl italic text-gray-400 max-w-2xl mx-auto">"思維是宇宙中最迷人的力量。"</p>
+                </div>
+            </div>
+
+            <div class="p-6 md:p-10 flex flex-col md:flex-row gap-10">
+                <!-- 左側：光譜比例條 (雷達圖概念的替代) -->
+                <div class="md:w-1/3 space-y-8 bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2"><i class="fa-solid fa-chart-bar mr-2 text-purple-600"></i> 特質光譜</h3>
+                    
+                    <!-- E vs I -->
+                    <div class="trait-bar">
+                        <div class="flex justify-between mb-1 text-sm font-bold">
+                            <span id="trait-left-label-1" class="text-gray-700">外向 (E)</span>
+                            <span id="trait-right-label-1" class="text-gray-700">內向 (I)</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-4 flex overflow-hidden relative">
+                            <div id="bar-left-1" class="h-full bg-teal-400 bar-fill flex items-center justify-start px-2 text-xs text-white font-bold" style="width: 50%">50%</div>
+                            <div id="bar-right-1" class="h-full bg-purple-500 bar-fill flex items-center justify-end px-2 text-xs text-white font-bold" style="width: 50%">50%</div>
+                        </div>
+                    </div>
+
+                    <!-- S vs N -->
+                    <div class="trait-bar">
+                        <div class="flex justify-between mb-1 text-sm font-bold">
+                            <span id="trait-left-label-2" class="text-gray-700">實感 (S)</span>
+                            <span id="trait-right-label-2" class="text-gray-700">直覺 (N)</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-4 flex overflow-hidden relative">
+                            <div id="bar-left-2" class="h-full bg-blue-400 bar-fill flex items-center justify-start px-2 text-xs text-white font-bold" style="width: 50%">50%</div>
+                            <div id="bar-right-2" class="h-full bg-yellow-500 bar-fill flex items-center justify-end px-2 text-xs text-white font-bold" style="width: 50%">50%</div>
+                        </div>
+                    </div>
+
+                    <!-- T vs F -->
+                    <div class="trait-bar">
+                        <div class="flex justify-between mb-1 text-sm font-bold">
+                            <span id="trait-left-label-3" class="text-gray-700">思考 (T)</span>
+                            <span id="trait-right-label-3" class="text-gray-700">情感 (F)</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-4 flex overflow-hidden relative">
+                            <div id="bar-left-3" class="h-full bg-red-400 bar-fill flex items-center justify-start px-2 text-xs text-white font-bold" style="width: 50%">50%</div>
+                            <div id="bar-right-3" class="h-full bg-green-500 bar-fill flex items-center justify-end px-2 text-xs text-white font-bold" style="width: 50%">50%</div>
+                        </div>
+                    </div>
+
+                    <!-- J vs P -->
+                    <div class="trait-bar">
+                        <div class="flex justify-between mb-1 text-sm font-bold">
+                            <span id="trait-left-label-4" class="text-gray-700">判斷 (J)</span>
+                            <span id="trait-right-label-4" class="text-gray-700">感知 (P)</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-4 flex overflow-hidden relative">
+                            <div id="bar-left-4" class="h-full bg-indigo-500 bar-fill flex items-center justify-start px-2 text-xs text-white font-bold" style="width: 50%">50%</div>
+                            <div id="bar-right-4" class="h-full bg-orange-400 bar-fill flex items-center justify-end px-2 text-xs text-white font-bold" style="width: 50%">50%</div>
+                        </div>
+                    </div>
+                    
+                    <button onclick="location.reload()" class="w-full mt-8 py-3 bg-white border-2 border-gray-300 hover:border-purple-500 hover:text-purple-600 rounded-xl font-bold transition-colors">
+                        <i class="fa-solid fa-rotate-right mr-2"></i> 重新測驗
+                    </button>
+                </div>
+
+                <!-- 右側：深度解析文本區 -->
+                <div class="md:w-2/3">
+                    <div class="prose max-w-none">
+                        <!-- 核心描述 -->
+                        <div class="mb-8">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center"><i class="fa-solid fa-book-open text-purple-600 mr-3"></i> 核心性格解析</h3>
+                            <p id="result-desc" class="text-gray-600 leading-relaxed text-lg">載入中...</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <!-- 優點 -->
+                            <div class="bg-green-50 p-5 rounded-xl border border-green-100">
+                                <h4 class="text-lg font-bold text-green-800 mb-3 flex items-center"><i class="fa-solid fa-arrow-trend-up mr-2"></i> 核心優勢</h4>
+                                <ul id="result-strengths" class="list-disc list-inside text-green-700 space-y-2">
+                                    <li>載入中...</li>
+                                </ul>
+                            </div>
+                            <!-- 缺點 -->
+                            <div class="bg-red-50 p-5 rounded-xl border border-red-100">
+                                <h4 class="text-lg font-bold text-red-800 mb-3 flex items-center"><i class="fa-solid fa-arrow-trend-down mr-2"></i> 潛在盲點</h4>
+                                <ul id="result-weaknesses" class="list-disc list-inside text-red-700 space-y-2">
+                                    <li>載入中...</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 職涯發展 -->
+                        <div class="mb-8">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center"><i class="fa-solid fa-briefcase text-blue-600 mr-3"></i> 職涯發展與天賦</h3>
+                            <p id="result-career" class="text-gray-600 leading-relaxed mb-3">載入中...</p>
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                                <span class="font-bold text-blue-800">推薦職業：</span>
+                                <span id="result-jobs" class="text-blue-700">載入中...</span>
+                            </div>
+                        </div>
+
+                        <!-- 戀愛與人際關係 -->
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center"><i class="fa-solid fa-heart text-pink-500 mr-3"></i> 戀愛與人際關係</h3>
+                            <p id="result-relationship" class="text-gray-600 leading-relaxed">載入中...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 底部版權宣告 -->
+    <footer class="text-center py-6 text-gray-400 text-sm">
+        <p>&copy; 2026 全能 MBTI 深度測試系統. Created with Advanced Algorithms & Deep Psychology.</p>
+        <p class="mt-1">此測驗結果僅供自我探索參考，不代表專業心理醫療診斷。</p>
+    </footer>
+
+    <!-- ========================================== -->
+    <!-- JavaScript 邏輯與龐大的資料庫區塊          -->
+    <!-- ========================================== -->
+    <script>
+        /**
+         * 為了滿足「越多越好、不要精簡」的要求，這裡準備了整整 40 題的詳細題庫。
+         * 每個題目包含：
+         * - text: 題目敘述
+         * - dimension: 評估的維度 (E/I, S/N, T/F, J/P)
+         * - direction: 正向或反向。
+         * 例如 dimension "EI", direction 1 代表「同意」加 E 的分數，「不同意」加 I 的分數。
+         * direction -1 則相反。
+         */
+        const questionsDB = [
+            // E vs I (外向 vs 內向) - 10題
+            { id: 1, text: "在大型社交聚會中，我通常會主動結識新朋友，而不是只和認識的人交談。", dimension: "EI", direction: 1 },
+            { id: 2, text: "經過一整天與人群高度互動的工作後，我需要獨處來恢復精力。", dimension: "EI", direction: -1 },
+            { id: 3, text: "我傾向於邊說邊想，我的想法往往在與他人討論的過程中變得清晰。", dimension: "EI", direction: 1 },
+            { id: 4, text: "我更喜歡一對一的深入交談，而非在群體中進行輕鬆的閒聊。", dimension: "EI", direction: -1 },
+            { id: 5, text: "在團隊合作時，我喜歡成為話題的引導者和氣氛的帶動者。", dimension: "EI", direction: 1 },
+            { id: 6, text: "週末時，我認為待在家裡看書、追劇或做自己的事，比出門參加派對更吸引人。", dimension: "EI", direction: -1 },
+            { id: 7, text: "我不介意成為眾人矚目的焦點，甚至有時候會享受這種感覺。", dimension: "EI", direction: 1 },
+            { id: 8, text: "我的社交圈不大，但我與這些少數朋友的關係極度深厚且緊密。", dimension: "EI", direction: -1 },
+            { id: 9, text: "當我長時間沒有與他人交流時，我會感到焦躁不安、缺乏動力。", dimension: "EI", direction: 1 },
+            { id: 10, text: "在發表意見之前，我通常會在腦海中反覆斟酌，確保邏輯嚴密才會說出口。", dimension: "EI", direction: -1 },
+
+            // S vs N (實感 vs 直覺) - 10題
+            { id: 11, text: "我非常注重眼前的現實和具體細節，而非虛無縹緲的未來願景。", dimension: "SN", direction: 1 },
+            { id: 12, text: "我經常會陷入對宇宙、哲學或事物運作底層邏輯的沉思之中。", dimension: "SN", direction: -1 },
+            { id: 13, text: "解決問題時，我更依賴過去的成功經驗和實用的方法。", dimension: "SN", direction: 1 },
+            { id: 14, text: "我喜歡想像各種「如果...會怎樣」的可能性，有時會覺得現實世界有點乏味。", dimension: "SN", direction: -1 },
+            { id: 15, text: "比起抽象的理論，我更喜歡那些可以直接應用於日常生活中的知識。", dimension: "SN", direction: 1 },
+            { id: 16, text: "在閱讀或看電影時，我更關注故事背後的隱喻和象徵意義，而不僅僅是表面劇情。", dimension: "SN", direction: -1 },
+            { id: 17, text: "我對於周遭環境的變化（如別人的新髮型、房間物品的位移）非常敏銳。", dimension: "SN", direction: 1 },
+            { id: 18, text: "我常被認為是一個充滿創意、思維跳躍、不按牌理出牌的人。", dimension: "SN", direction: -1 },
+            { id: 19, text: "我喜歡按部就班地跟著說明書操作，不喜歡在沒有指引的情況下盲目摸索。", dimension: "SN", direction: 1 },
+            { id: 20, text: "我相信直覺和預感往往比純粹的數據分析更能指向正確的答案。", dimension: "SN", direction: -1 },
+
+            // T vs F (思考 vs 情感) - 10題
+            { id: 21, text: "在做決定時，我會優先考慮客觀事實與邏輯，即使這可能會讓某些人不開心。", dimension: "TF", direction: 1 },
+            { id: 22, text: "我非常在意身邊人的情緒變化，並總是盡力維持環境的和諧。", dimension: "TF", direction: -1 },
+            { id: 23, text: "我認為在辯論中「找出真理」比「顧及對方感受」來得重要。", dimension: "TF", direction: 1 },
+            { id: 24, text: "當朋友遇到困難時，我傾向於先給予情感上的安慰和同理，而不是馬上幫他分析解決方案。", dimension: "TF", direction: -1 },
+            { id: 25, text: "評價一個人的工作表現時，我會嚴格依據他的成果和數據，而非他有多努力或他的個人背景。", dimension: "TF", direction: 1 },
+            { id: 26, text: "我很容易受到一部感人的電影或悲傷的新聞影響而落淚。", dimension: "TF", direction: -1 },
+            { id: 27, text: "有時我會被別人批評為「過於冷酷」、「不近人情」或「太過理性」。", dimension: "TF", direction: 1 },
+            { id: 28, text: "我認為世界上的對錯並非絕對，很多事情取決於每個人的價值觀與立場。", dimension: "TF", direction: -1 },
+            { id: 29, text: "我擅長從複雜的資訊中抽絲剝繭，找出系統性的問題所在。", dimension: "TF", direction: 1 },
+            { id: 30, text: "在做重大人生抉擇時（如換工作、結婚），我心裡的「感覺」比試算表上的優缺點分析更具決定性。", dimension: "TF", direction: -1 },
+
+            // J vs P (判斷 vs 感知) - 10題
+            { id: 31, text: "我喜歡提前規劃好旅行的詳細行程，不喜歡充滿不確定性的「說走就走」。", dimension: "JP", direction: 1 },
+            { id: 32, text: "我的工作空間和房間經常顯得有些凌亂，但我自己知道東西在哪裡。", dimension: "JP", direction: -1 },
+            { id: 33, text: "我有一份待辦事項清單（To-Do List），且每天都會嚴格執行並享受打勾的快感。", dimension: "JP", direction: 1 },
+            { id: 34, text: "我傾向於把事情拖延到最後一刻，因為死線（Deadline）能激發我最大的潛能與靈感。", dimension: "JP", direction: -1 },
+            { id: 35, text: "面對突然改變的計畫，我會感到焦慮和不適，我喜歡事情按照預期發展。", dimension: "JP", direction: 1 },
+            { id: 36, text: "我喜歡保持選擇的開放性，不喜歡太早做出決定以防有更好的選項出現。", dimension: "JP", direction: -1 },
+            { id: 37, text: "完成一項工作後再去玩樂，會讓我感到更安心；我不喜歡帶著未完成的壓力休息。", dimension: "JP", direction: 1 },
+            { id: 38, text: "我的生活充滿隨興，經常根據當天的心情來決定要吃什麼、做什麼。", dimension: "JP", direction: -1 },
+            { id: 39, text: "我非常看重時間觀念，遲到對我來說是極度不尊重他人的行為。", dimension: "JP", direction: 1 },
+            { id: 40, text: "我擅長在混亂和多變的環境中即興發揮、隨機應變。", dimension: "JP", direction: -1 }
+        ];
+
+        /**
+         * 16型人格的超級深度解析資料庫
+         * 為了不精簡，這裡每一種人格都撰寫了詳細的文本。
+         */
+        const mbtiDictionary = {
+            "INTJ": {
+                title: "建築師",
+                quote: "在規則中尋找漏洞，在混沌中建立秩序。",
+                desc: "INTJ 是富有想像力且具備戰略眼光的思想家。他們對知識有著無底洞般的渴望，通常在很小的時候就被稱為書蟲。他們不滿足於表面的理解，總是試圖看透事物的本質。他們是獨立的思考者，不盲從權威，只有在邏輯嚴密、證據充分的情況下才會被說服。他們對自己和他人都有極高的標準，有時會顯得過於完美主義和冷漠。",
+                strengths: ["超凡的戰略規劃與系統性思維", "高度的獨立性與自信", "不畏懼質疑現狀，具備創新精神", "一旦設定目標便有極強的執行力與專注力"],
+                weaknesses: ["過於理性，有時忽略他人的情感需求", "對效率低下或缺乏邏輯的人缺乏耐心", "容易陷入過度思考與完美主義的泥淖", "在社交場合中可能顯得生硬或傲慢"],
+                career: "INTJ 適合那些需要深度思考、解決複雜問題並允許獨立工作的環境。他們討厭微觀管理，渴望在戰略層面上發揮影響力。",
+                jobs: "軟體架構師、科學家、投資分析師、管理顧問、專案經理、系統工程師。",
+                relationship: "在感情中，INTJ 尋求的是智力上的伴侶。他們不擅長浪漫的甜言蜜語，但會用極度忠誠和解決實際問題的方式來表達愛意。他們需要大量的個人空間，伴侶必須能理解並尊重他們的獨立性。"
+            },
+            "INTP": {
+                title: "邏輯學家",
+                quote: "宇宙的真理，隱藏在無數次的假設與推翻之中。",
+                desc: "INTP 是充滿創新精神的發明家，以其對理論和邏輯的狂熱而聞名。他們大腦裡總是在進行著一場永無止境的辯論，熱衷於分析模式、尋找規律。日常的瑣事對他們來說枯燥乏味，他們更願意將精力投入到探討宇宙奧秘、量子物理或某個小眾的學術領域。他們是天生的哲學家，喜歡問「為什麼」，甚至更喜歡問「為什麼不」。",
+                strengths: ["卓越的分析與抽象思考能力", "想像力豐富，總能提出破天荒的想法", "客觀且思想開放，樂於接受新資訊", "誠實直率，不喜歡虛偽與做作"],
+                weaknesses: ["容易陷入理論而忽略實際行動（眼高手低）", "常常忘記日常瑣事（如吃飯、繳費）", "在情感表達上顯得笨拙與不知所措", "過於挑剔，容易對事物失去興趣"],
+                career: "INTP 在需要極度創新和理論分析的領域中如魚得水，他們需要自由靈活的工作環境，痛恨僵化的官僚體制。",
+                jobs: "數學家、物理學家、大學教授、軟體開發者、數據科學家、哲學家。",
+                relationship: "INTP 在戀愛中可能會有些遲鈍。他們需要一個能夠包容他們「大腦時常不在地球上」的伴侶。一旦他們認定了某人，會展現出孩子般的純真與忠誠，並樂於與伴侶分享他們腦海中奇妙的世界。"
+            },
+            "ENTJ": {
+                title: "指揮官",
+                quote: "如果沒有路，我就自己開闢一條。",
+                desc: "ENTJ 是天生的領導者，充滿魅力與自信。他們具有無與倫比的權威感，能夠輕易地將眾人聚集在一個共同的目標下。他們是無情的理性主義者，利用強大的動力、堅定的決心和敏銳的頭腦來實現他們為自己設定的任何目標。他們不畏懼挑戰，甚至熱愛挑戰，因為他們相信只要有足夠的時間和資源，他們可以完成任何事。",
+                strengths: ["天生的領導魅力與組織能力", "極高的效率與決斷力", "堅定的意志，不輕言放棄", "擅長發現他人的潛能並加以利用"],
+                weaknesses: ["固執且有時顯得專橫、獨裁", "對無法跟上他們步伐的人缺乏同理心", "難以處理微妙的情感問題", "過於專注目標，可能犧牲生活品質"],
+                career: "ENTJ 天生適合站在金字塔頂端。他們需要具有挑戰性、能夠讓他們發揮戰略眼光和領導才能的職位。",
+                jobs: "企業CEO、創業者、企業律師、政治家、高階主管、管理顧問。",
+                relationship: "在關係中，ENTJ 將伴侶視為團隊的一員，他們尋求共同成長與進步。他們可能會將感情也當作一個專案來經營，這有時會讓伴侶感到壓力。他們需要一個足夠自信、能夠與他們進行智力博弈的伴侶。"
+            },
+            "ENTP": {
+                title: "辯論家",
+                quote: "我反對你的觀點，但我更想證明你是錯的。",
+                desc: "ENTP 是終極的魔鬼代言人，他們熱衷於在知識的邊緣地帶進行思想的碰撞。他們不是為了達成某個特定的戰略目標而辯論，純粹是因為這很有趣。沒有什麼比一場激烈的智力角力更能讓他們感到興奮了。他們思維敏捷，知識淵博，擅長將截然不同的想法聯繫在一起。然而，他們往往擅長提出絕佳的點子，卻在執行階段失去興趣。",
+                strengths: ["無可匹敵的腦力激盪與創新能力", "適應力極強，反應敏捷", "充滿個人魅力，擅長演說與說服", "不怕失敗，將挑戰視為遊戲"],
+                weaknesses: ["容易三分鐘熱度，缺乏貫徹到底的毅力", "為了辯論而辯論，容易激怒他人", "討厭例行公事與細節處理", "有時為了證明自己而顯得自大"],
+                career: "ENTP 需要一個不斷變化、充滿刺激的工作環境。他們適合擔任發想者、解決難題的專家，但不適合從事重複性高的行政工作。",
+                jobs: "連續創業者、公關專家、律師、行銷策劃、政治顧問、脫口秀演員。",
+                relationship: "與 ENTP 談戀愛絕對不會無聊。他們會不斷帶來新的驚喜與挑戰。伴侶需要有強大的心臟來應付他們忽冷忽熱的興趣轉移，並且要能夠在言語上與他們勢均力敵，不要把他們的玩笑或辯論太當真。"
+            },
+            "INFJ": {
+                title: "提倡者",
+                quote: "在最深的黑暗中，做那束最溫柔的光。",
+                desc: "INFJ 是極為稀有的人格類型，他們天生具有強烈的理想主義和道德感，但與其他理想主義者不同的是，他們不是懶散的夢想家，而是能夠採取具體步驟來實現目標、留下持久積極影響的人。他們對人性的洞察力深不可測，通常只需交談幾句就能看穿別人的虛偽或真實意圖。他們溫柔、富有同情心，但為了心中的信念，也可以展現出驚人的堅韌。",
+                strengths: ["極具穿透力的直覺與洞察力", "強烈的使命感與道德準則", "能夠激勵與療癒他人的感染力", "在溫柔中蘊含著堅定的意志力"],
+                weaknesses: ["極度容易耗竭（Burnout）", "完美主義，對自己和他人要求極高", "極度保護隱私，難以敞開心扉", "面對批評極度敏感，容易受傷"],
+                career: "INFJ 需要一份有意義、能夠幫助他人或改善世界的工作。單純為了賺錢而工作會讓他們感到靈魂枯竭。",
+                jobs: "心理諮商師、作家、藝術家、非營利組織負責人、人力資源專家、教師。",
+                relationship: "INFJ 尋求的是靈魂伴侶，而非膚淺的短暫浪漫。他們極具奉獻精神，會為伴侶付出一切，但也期望得到同等深度的理解與忠誠。一旦遭到背叛，他們會毫不猶豫地啟動「門前清」機制，永遠將對方從生命中剔除。"
+            },
+            "INFP": {
+                title: "調停者",
+                quote: "我閉上眼睛，世界就變得無比廣闊。",
+                desc: "INFP 是真正的理想主義者，他們總是在最壞的人和事中尋找最好的一面，尋求使事情變得更好的方法。雖然他們可能被認為是冷靜、保守甚至害羞的人，但他們內心卻燃燒著激情的火焰。他們由深層的價值觀驅動，做決定時依賴的是自己的道德指南針，而非邏輯或實用性。他們擁有極高的藝術天分與語言天賦，擅長透過比喻和象徵來表達內心的波瀾壯闊。",
+                strengths: ["無可救藥的樂觀與純真", "極具藝術創造力與寫作天賦", "包容心極強，不隨意評判他人", "對自己的價值觀絕對忠誠"],
+                weaknesses: ["過於理想化，容易對現實感到失望", "在感情和工作中容易忽視實際問題（如財務）", "過度內耗，容易陷入自我懷疑與憂鬱", "難以應對衝突，傾向於逃避"],
+                career: "INFP 需要一個能讓他們表達創造力、且符合他們價值觀的環境。他們喜歡獨立工作，且討厭嚴格的層級制度與死板的規定。",
+                jobs: "詩人、小說家、平面設計師、心理治療師、社工、翻譯家。",
+                relationship: "INFP 在愛情中是無可救藥的浪漫主義者。他們往往在腦海中勾勒出完美的伴侶形象，這有時會讓現實中的伴侶感到壓力。然而，當他們真正愛上一個人時，會給予無條件的支持與深情的陪伴，是極為溫柔的戀人。"
+            },
+            "ENFJ": {
+                title: "主人公",
+                quote: "你的潛能，由我來為你點亮。",
+                desc: "ENFJ 是天生的領導者，充滿熱情和魅力。他們約佔人口的 2%，經常出現在政治家、教練和教師之中，他們向他人伸出援手，啟發他人取得成就並造福世界。他們具有極強的同理心，能夠敏銳地察覺到他人的情緒，並給予恰到好處的安慰與鼓勵。他們有時會過於捲入別人的問題中，甚至把別人的痛苦當作自己的痛苦來承擔。",
+                strengths: ["極具感染力的領導魅力與熱情", "超強的同理心與人際交往能力", "可靠且值得信賴，總是樂於助人", "擅長調解衝突，凝聚團隊向心力"],
+                weaknesses: ["過度犧牲自我以滿足他人需求", "過度敏感，容易因他人的不滿而自責", "在面臨艱難客觀決策時猶豫不決", "有時為了維持和諧而掩蓋真實問題"],
+                career: "ENFJ 天生適合指導、教育或帶領他人。他們在充滿人際互動、能夠發揮正面影響力的環境中表現最出色。",
+                jobs: "公關總監、政治家、企業培訓師、教師、活動策劃、心理諮商師。",
+                relationship: "ENFJ 在關係中非常主動且充滿愛意。他們會花費大量時間確保伴侶的幸福，有時甚至會過度干涉伴侶的生活以「幫助他們變得更好」。他們需要伴侶的回饋和肯定，如果付出得不到珍惜，他們會感到深深的受傷。"
+            },
+            "ENFP": {
+                title: "競選者",
+                quote: "生活是一場偉大的冒險，讓我們一起去探索吧！",
+                desc: "ENFP 是真正的自由精神。他們通常是聚會上的焦點，但與追求一時刺激的探索者不同，ENFP 更享受與他人建立深刻的情感與社會聯繫。他們充滿魅力、獨立、充滿活力和同情心。他們看世界的方式就像是在看一個巨大的拼圖，每一個事物都充滿了神秘和可能性。他們很容易感到無聊，一旦一項工作變成了例行公事，他們就會迅速失去熱情。",
+                strengths: ["熱情洋溢，充滿好奇心與活力", "出色的溝通技巧與社交魅力", "極具同理心，能洞察他人的真實情感", "思維跳躍，總能想出新奇的點子"],
+                weaknesses: ["極度缺乏專注力與組織能力", "容易過度思考，把簡單的事情複雜化", "極度討厭被規則束縛", "情緒起伏大，容易受到周圍環境影響"],
+                career: "ENFP 需要自由、彈性且充滿挑戰的工作。他們討厭微觀管理，適合需要創意、人際溝通和不斷變化的角色。",
+                jobs: "記者、藝術總監、公關經理、旅遊博主、外交官、廣告創意。",
+                relationship: "ENFP 的戀愛充滿了激情與火花。他們會不斷為關係注入新鮮感。然而，他們對於「靈魂伴侶」的極致追求，有時會讓他們在關係中感到不安，總在想「是否還有更適合的人」。穩定的伴侶需要能給予他們足夠的自由與驚喜。"
+            },
+            "ISTJ": {
+                title: "物流師",
+                quote: "責任、榮譽、規則，這是支撐世界的基石。",
+                desc: "ISTJ 是人口數量最多的類型之一，約佔 13%。他們具有決定性的特徵：誠實、務實、致力於責任。他們是家庭、傳統和組織中的中流砥柱。當他們承諾做一件事時，他們會不計代價地完成它；他們對那些不履行承諾的人會感到困惑和不屑。他們喜歡按部就班，依靠事實和數據來工作，而不是虛無縹緲的感覺。",
+                strengths: ["極度可靠、負責任且守信用", "冷靜、理智，具備強大的實踐能力", "卓越的組織與規劃能力，注重細節", "忠誠，維護傳統與秩序"],
+                weaknesses: ["過於固執，難以接受新觀念或改變", "有時顯得冷漠，忽視他人的情感需求", "容易過度承擔責任，導致壓力過大", "過於循規蹈矩，缺乏靈活性"],
+                career: "ISTJ 在需要精確、穩定、邏輯和清晰結構的領域表現優異。他們是出色的執行者和管理者。",
+                jobs: "會計師、稽核員、軍官、律師、財務經理、資料庫管理員。",
+                relationship: "ISTJ 不是那種會準備浪漫燭光晚餐的人，但他們是最可靠的伴侶。他們會準時繳帳單、修好家裡壞掉的水管、為未來存好養老金。他們用實際行動來表達愛，期望伴侶同樣具備責任感和忠誠度。"
+            },
+            "ISFJ": {
+                title: "守衛者",
+                quote: "我會默默地站在你身後，為你抵擋一切風雨。",
+                desc: "ISFJ 是非常獨特的類型，他們的許多特質看似矛盾：他們雖然內向，卻擁有出色的社交技巧和良好的人際關係；雖然是情感型（F），卻具有極強的分析能力；雖然傾向於保守，卻對變化抱持開放態度（只要這對保護他們的所愛之人有利）。他們是真正的利他主義者，以最大的善意回報善意，並對他們相信的工作和人投入難以置信的熱情。",
+                strengths: ["無比的忠誠與奉獻精神", "極度細心，能記住關於別人的小細節", "吃苦耐勞，可靠且值得信賴", "強大的實踐能力與觀察力"],
+                weaknesses: ["過度謙虛，常常忽視或貶低自己的成就", "極度害怕衝突，經常委屈自己", "容易過度疲勞，因為不懂得拒絕別人", "難以適應突如其來的改變"],
+                career: "ISFJ 在能夠幫助他人並具有穩定結構的環境中茁壯成長。他們是醫療保健、教育和社會服務領域的中堅力量。",
+                jobs: "護士、幼稚園教師、行政助理、社工、客戶服務、牙醫。",
+                relationship: "ISFJ 是所有類型中最忠誠、最體貼的伴侶之一。他們會記住每一個紀念日、你最喜歡的口味，並努力創造一個溫馨舒適的家。但他們傾向於隱藏自己的需求，伴侶需要主動關心並鼓勵他們表達真實的想法。"
+            },
+            "ESTJ": {
+                title: "總經理",
+                quote: "不要給我藉口，給我結果。",
+                desc: "ESTJ 代表著傳統和秩序，他們利用對正邪和社會標準的理解，將家庭和社區團結在一起。他們是擁抱誠實、奉獻和尊嚴等價值觀的人，他們因為其清晰的建議和指導而受到重視。他們相信權威必須建立在努力工作和正直的基礎上。在混亂的環境中，他們會迅速站出來，建立清晰的規則和流程，讓一切步入正軌。",
+                strengths: ["卓越的組織、管理與領導能力", "極具效率，重視結果與實際行動", "誠實、直接且值得信賴", "堅定的意志，不輕易向困難妥協"],
+                weaknesses: ["過於死板，難以容忍非傳統的做事方式", "對別人的錯誤和缺點缺乏耐心與同理心", "過於重視地位與社會認可", "有時顯得專橫、控制慾過強"],
+                career: "ESTJ 天生適合管理階層。他們在需要維持秩序、制定規則、確保任務按時完成的職位上如魚得水。",
+                jobs: "專案經理、法官、警察局長、企業高管、金融總監、軍隊指揮官。",
+                relationship: "ESTJ 在關係中直截了當。他們不喜歡猜忌或心理遊戲。他們會為家庭提供極大的穩定性和安全感，但也可能對伴侶和孩子期望過高、過於嚴厲。伴侶需要理解他們的嚴厲往往是出於責任感。"
+            },
+            "ESFJ": {
+                title: "執政官",
+                quote: "看到你們都開心，我就覺得一切都值得了。",
+                desc: "ESFJ 是極受歡迎的人，在高中時，他們就是啦啦隊長或四分衛，定下基調，成為聚光燈下的焦點，並帶領團隊取得勝利。長大後，他們依然喜歡支持他們的朋友和愛人，組織社交聚會，並盡最大努力確保每個人都開心。他們對他人的需求極度敏感，並且真心實意地想要提供幫助。他們重視傳統，看重法律與規則，並期望他人也能如此。",
+                strengths: ["極強的實踐能力與責任感", "溫暖、友善，極具親和力與社交技巧", "擅長照顧他人，是團隊的黏著劑", "對所在群體極度忠誠"],
+                weaknesses: ["過度在意他人的評價與社會地位", "難以接受批評，極易受傷", "有時會因為過度干涉他人生活而招致反感", "缺乏創新能力，不願跳出舒適圈"],
+                career: "ESFJ 在需要大量人際互動、且能夠明確看到自己對他人產生幫助的領域中最快樂。他們非常適合團隊合作。",
+                jobs: "活動策劃、公關人員、醫療護理人員、人力資源經理、小學教師、房地產經紀人。",
+                relationship: "ESFJ 將感情看得非常重。他們喜歡傳統的約會儀式，並期望關係能夠走向婚姻與家庭。他們是極其體貼的伴侶，但也非常需要伴侶的肯定與讚美。如果不被感激，他們會變得充滿怨言。"
+            },
+            "ISTP": {
+                title: "鑑賞家",
+                quote: "少說廢話，讓我看看這東西是怎麼運作的。",
+                desc: "ISTP 喜歡用雙手和眼睛探索世界，用冷靜的理性主義和旺盛的好奇心去觸摸和檢查周圍的世界。他們是天生的製造者，從一個項目轉移到下一個項目，從實踐中學習。他們喜歡拆解事物然後重新組裝，讓它變得比以前更好。他們看起來很安靜，但這往往是在為下一波能量爆發積蓄力量。他們的行為往往難以預測。",
+                strengths: ["在危機中極度冷靜，擁有卓越的隨機應變能力", "動手能力極強，精通工具與機械", "理性、務實且客觀", "充滿活力與冒險精神，不受束縛"],
+                weaknesses: ["難以專注於長遠的計畫或理論學習", "在感情上顯得冷漠，不擅長表達和安撫", "極度討厭承諾，喜歡保持自由", "容易因為無聊而尋求危險的刺激"],
+                career: "ISTP 無法忍受整天坐在辦公桌前處理文件。他們需要能夠動手、解決實際問題、具有一定靈活性甚至危險性的工作。",
+                jobs: "機械工程師、飛行員、外科醫生、法醫、消防員、極限運動員。",
+                relationship: "ISTP 在愛情中需要大量的個人空間。他們不喜歡被緊緊束縛或被逼迫談論未來的承諾。他們表達愛的方式往往是為你修理壞掉的電器，或帶你去體驗一場刺激的冒險。與他們相處，最好的方式是像朋友一樣並肩前行。"
+            },
+            "ISFP": {
+                title: "探險家",
+                quote: "我的生活就是我的畫布，每一天都是一抹新的色彩。",
+                desc: "ISFP 是真正的藝術家，雖然不一定是在畫畫或唱歌，但他們利用美學、設計甚至自己的選擇和行動來突破社會常規的極限。他們喜歡打破傳統的期望，探索美與行為的實驗。他們生活在一個多姿多彩的感官世界中，深受周圍環境的啟發。他們是內向的，當他們退出舞台退回到自己的小世界時，常常讓朋友們感到驚訝。但這正是他們重新充電的方式。",
+                strengths: ["極具藝術天賦與審美觀", "極具魅力，溫和且不帶偏見", "敏銳的感官體驗，懂得享受當下", "充滿熱情與同理心"],
+                weaknesses: ["極度討厭長遠規劃，生活缺乏條理", "過度敏感，容易將事情個人化並受傷", "難以應對壓力與衝突環境", "財務觀念往往較為薄弱"],
+                career: "ISFP 需要一個能讓他們表達個性和創造力的工作環境。嚴格的規定、死板的時間表會扼殺他們的靈魂。",
+                jobs: "時裝設計師、室內設計師、音樂家、藝術家、廚師、自由攝影師。",
+                relationship: "ISFP 是神祕且迷人的戀人。他們重視當下的感受，喜歡透過行動和小驚喜（而不是言語）來表達愛意。他們討厭爭吵和控制，伴侶必須能夠欣賞他們獨特的美感，並給予他們足夠的自由去探索世界。"
+            },
+            "ESTP": {
+                title: "企業家",
+                quote: "規則？那不就是用來打破的嗎？",
+                desc: "ESTP 總是對周圍的環境產生直接的影響。如果你想在派對上找到他們，就尋找那群人中最熱鬧的中心吧。他們喜歡成為眾人矚目的焦點，充滿了活力、幽默和行動力。他們不喜歡抽象的理論，而是傾向於採取行動，並在過程中修正錯誤。他們是天生的風險承擔者，能在高壓和快速變化的環境中憑藉直覺做出正確的決定。",
+                strengths: ["極佳的行動力與執行力", "大膽、勇敢，擅長危機處理", "極具社交魅力，擅長說服他人", "敏銳的觀察力，能立刻察覺細微變化"],
+                weaknesses: ["缺乏耐心，難以專注於長遠計畫或細節", "有時為了刺激而忽視風險和規則", "常常不顧及他人的感受，顯得過於直白", "討厭理論學習，可能錯失深層次的反思"],
+                career: "ESTP 適合高強度、高回報、需要快速反應和人際互動的領域。他們是天生的銷售員和談判專家。",
+                jobs: "企業家、股票經紀人、銷售總監、急診室醫生、運動員、談判專家。",
+                relationship: "與 ESTP 談戀愛就像坐雲霄飛車，充滿刺激與樂趣。他們不喜歡深沉的情感探討，更喜歡帶伴侶去體驗新奇的事物。他們可能會在承諾面前退縮，因此伴侶需要具備獨立性，並能與他們一起享受當下的狂歡。"
+            },
+            "ESFP": {
+                title: "表演者",
+                quote: "全世界都是我的舞台，而我正準備好大放異彩！",
+                desc: "如果有人會突然開始唱歌跳舞，那一定是 ESFP。他們沉浸在當下的興奮中，並希望其他人也能感受到這種興奮。在鼓勵他人方面，沒有其他性格類型比他們更慷慨地奉獻時間和精力。他們充滿了無可救藥的樂觀，熱愛生活，熱愛人群，熱愛物質享受。他們極具美感，喜歡打扮自己，也擅長將周圍的環境佈置得舒適又漂亮。",
+                strengths: ["卓越的社交能力，天生的氣氛製造者", "極強的觀察力，能敏銳察覺他人的情緒變化", "實用主義與美感的完美結合", "極佳的適應力，走到哪裡都能交到朋友"],
+                weaknesses: ["容易迴避困難與衝突，缺乏面對問題的勇氣", "極易分心，難以長期專注於單一目標", "常常因為過度追求享樂而忽視未來規劃（或財務）", "對抽象理論或數據分析感到極度不耐煩"],
+                career: "ESFP 無法在孤立或枯燥的環境中生存。他們需要在充滿活力、能與人頻繁接觸、甚至具有表演性質的舞台上發光發熱。",
+                jobs: "演員、活動主持人、公關專家、室內設計師、旅遊嚮導、美容顧問。",
+                relationship: "ESFP 是熱情洋溢、毫不吝嗇表達愛意的伴侶。他們會用鮮花、禮物和無數的讚美將你淹沒。他們最怕無聊和沉悶，所以關係中必須不斷有新的活動和社交聚會。當面臨嚴肅的關係問題時，他們可能會傾向於逃避。"
+            }
+        };
+
+        // 應用程式狀態變數
+        let currentQuestionIndex = 0;
+        let scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+        let answers = []; // 紀錄每題的作答，方便「上一題」功能
+
+        // 初始化與視圖切換函數
+        function switchView(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function startTest() {
+            // 重置所有狀態
+            currentQuestionIndex = 0;
+            scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+            answers = new Array(questionsDB.length).fill(null);
+            
+            // 打亂題目順序以增加測驗的隨機性與真實感 (Fisher-Yates Shuffle)
+            for (let i = questionsDB.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [questionsDB[i], questionsDB[j]] = [questionsDB[j], questionsDB[i]];
+            }
+
+            renderQuestion();
+            switchView('view-quiz');
+        }
+
+        function renderQuestion() {
+            const question = questionsDB[currentQuestionIndex];
+            
+            // 更新進度與文字
+            const progress = ((currentQuestionIndex) / questionsDB.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            document.getElementById('progress-text').innerText = `進度: ${Math.round(progress)}%`;
+            document.getElementById('question-counter').innerText = `${currentQuestionIndex + 1} / ${questionsDB.length}`;
+            
+            // 加入淡出淡入動畫效果
+            const qText = document.getElementById('question-text');
+            qText.style.opacity = 0;
+            setTimeout(() => {
+                qText.innerText = question.text;
+                qText.style.opacity = 1;
+            }, 150);
+
+            // 清除已選取的按鈕樣式
+            document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+            
+            // 如果這題之前有答過（上一題返回時），恢復選取狀態
+            if (answers[currentQuestionIndex] !== null) {
+                const prevAnswer = answers[currentQuestionIndex];
+                // 找到對應的按鈕。這個稍微複雜點，我們可以透過 onClick 傳入的值來反推
+                const btns = document.querySelectorAll('.option-btn');
+                const values = [3, 2, 1, 0, -1, -2, -3]; // 對應 HTML 中的順序
+                const btnIndex = values.indexOf(prevAnswer);
+                if (btnIndex !== -1) {
+                    btns[btnIndex].classList.add('selected');
+                }
+            }
+
+            // 控制上一題按鈕的顯示
+            const btnPrev = document.getElementById('btn-prev');
+            if (currentQuestionIndex > 0) {
+                btnPrev.classList.remove('hidden');
+            } else {
+                btnPrev.classList.add('hidden');
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                // 回到上一題時，扣除該題原本的分數
+                const prevQuestion = questionsDB[currentQuestionIndex - 1];
+                const prevValue = answers[currentQuestionIndex - 1];
+                
+                if (prevValue !== null) {
+                    const dim = prevQuestion.dimension; // "EI", "SN", "TF", "JP"
+                    const dir = prevQuestion.direction;
+                    
+                    const char1 = dim.charAt(0);
+                    const char2 = dim.charAt(1);
+                    
+                    let finalVal = prevValue * dir;
+                    if (finalVal > 0) {
+                        scores[char1] -= finalVal;
+                    } else if (finalVal < 0) {
+                        scores[char2] -= Math.abs(finalVal);
+                    }
+                }
+                
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        }
+
+        function handleAnswer(value) {
+            // 為按鈕添加視覺回饋 (利用 event.target 找到點擊的按鈕)
+            const clickedBtn = event.target;
+            document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+            clickedBtn.classList.add('selected');
+
+            // 紀錄答案
+            answers[currentQuestionIndex] = value;
+
+            // 計算分數邏輯
+            const question = questionsDB[currentQuestionIndex];
+            const dim = question.dimension; // "EI", "SN", "TF", "JP"
+            const dir = question.direction; // 1 或 -1
+            
+            const char1 = dim.charAt(0); // E, S, T, J
+            const char2 = dim.charAt(1); // I, N, F, P
+            
+            // 例如：value = 3 (強烈同意), dir = -1 (反向題，代表偏向 I)
+            // finalVal = 3 * -1 = -3。負數代表加給第二個字母(I)。
+            let finalVal = value * dir;
+
+            if (finalVal > 0) {
+                scores[char1] += finalVal;
+            } else if (finalVal < 0) {
+                scores[char2] += Math.abs(finalVal);
+            }
+            // value 為 0 時不加分
+
+            // 稍微延遲以顯示動畫，然後進入下一題
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questionsDB.length) {
+                    renderQuestion();
+                } else {
+                    finishTest();
+                }
+            }, 300);
+        }
+
+        function finishTest() {
+            switchView('view-loading');
+            
+            // 模擬複雜演算法的延遲計算，增加沉浸感
+            let dotCount = 0;
+            const loadingInterval = setInterval(() => {
+                const texts = ["比對性格光譜中...", "分析潛在心理特質...", "生成您的專屬報告...", "即將完成..."];
+                document.getElementById('loading-text').innerText = texts[dotCount % texts.length];
+                dotCount++;
+            }, 800);
+
+            setTimeout(() => {
+                clearInterval(loadingInterval);
+                calculateAndRenderResult();
+            }, 3000);
+        }
+
+        function calculateAndRenderResult() {
+            // 1. 判斷四個維度的傾向
+            const finalType = 
+                (scores.E >= scores.I ? 'E' : 'I') +
+                (scores.S >= scores.N ? 'S' : 'N') +
+                (scores.T >= scores.F ? 'T' : 'F') +
+                (scores.J >= scores.P ? 'J' : 'P');
+
+            // 2. 計算百分比 (每個維度的最高分是 10 * 3 = 30 分)
+            // 為了避免 0 分導致除以 0，我們先給個基礎偏移
+            const calcPercent = (val1, val2) => {
+                const total = val1 + val2;
+                if (total === 0) return { p1: 50, p2: 50 }; // 完全中立
+                const p1 = Math.round((val1 / total) * 100);
+                return { p1: p1, p2: 100 - p1 };
+            };
+
+            const percEI = calcPercent(scores.E, scores.I);
+            const percSN = calcPercent(scores.S, scores.N);
+            const percTF = calcPercent(scores.T, scores.F);
+            const percJP = calcPercent(scores.J, scores.P);
+
+            // 3. 填入 UI 數據
+            document.getElementById('result-type').innerText = finalType;
+            
+            const data = mbtiDictionary[finalType];
+            document.getElementById('result-title').innerText = `- ${data.title} -`;
+            document.getElementById('result-quote').innerText = `"${data.quote}"`;
+            document.getElementById('result-desc').innerText = data.desc;
+            document.getElementById('result-career').innerText = data.career;
+            document.getElementById('result-jobs').innerText = data.jobs;
+            document.getElementById('result-relationship').innerText = data.relationship;
+
+            // 填入優缺點列表
+            const renderList = (elementId, arrayData) => {
+                const el = document.getElementById(elementId);
+                el.innerHTML = '';
+                arrayData.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerText = item;
+                    el.appendChild(li);
+                });
+            };
+            renderList('result-strengths', data.strengths);
+            renderList('result-weaknesses', data.weaknesses);
+
+            // 4. 更新進度條動畫
+            const updateBar = (idLeft, idRight, p1, p2, char1, char2) => {
+                const barLeft = document.getElementById(idLeft);
+                const barRight = document.getElementById(idRight);
+                
+                // 動畫重置
+                barLeft.style.width = '0%';
+                barRight.style.width = '0%';
+                
+                setTimeout(() => {
+                    barLeft.style.width = `${p1}%`;
+                    barLeft.innerText = p1 > 10 ? `${p1}% ${char1}` : '';
+                    
+                    barRight.style.width = `${p2}%`;
+                    barRight.innerText = p2 > 10 ? `${char2} ${p2}%` : '';
+                    
+                    // 根據誰大來加強透明度/顏色表現
+                    if(p1 > p2) {
+                        barRight.style.opacity = '0.5';
+                        barLeft.style.opacity = '1';
+                    } else if (p2 > p1) {
+                        barLeft.style.opacity = '0.5';
+                        barRight.style.opacity = '1';
+                    } else {
+                        barLeft.style.opacity = '1';
+                        barRight.style.opacity = '1';
+                    }
+                }, 100);
+            };
+
+            updateBar('bar-left-1', 'bar-right-1', percEI.p1, percEI.p2, 'E', 'I');
+            updateBar('bar-left-2', 'bar-right-2', percSN.p1, percSN.p2, 'S', 'N');
+            updateBar('bar-left-3', 'bar-right-3', percTF.p1, percTF.p2, 'T', 'F');
+            updateBar('bar-left-4', 'bar-right-4', percJP.p1, percJP.p2, 'J', 'P');
+
+            // 5. 切換到結果畫面
+            switchView('view-result');
+        }
+    </script>
+</body>
+</html>
+

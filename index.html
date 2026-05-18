@@ -6,7 +6,7 @@
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <title>{{project_title}}</title>    
+    <title>NAS 系統 - 企業級檔案管理平台</title>    
     <!-- THIS IS THE START OF A COMMENT BLOCK, BLOCK TO BE DELETED: Google Fonts here, example:
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -79,6 +79,17 @@ Error generating stack: `+l.message+`
 </script>
 
     <div id="root"></div>
+    <script type="text/javascript">
+      // GitHub Pages 客戶端路由支援
+      (function() {
+        if (window.location.pathname !== '/' && !window.location.pathname.includes('.')) {
+          var segments = window.location.pathname.split('/').filter(Boolean);
+          if (segments.length > 0) {
+            window.history.replaceState(null, null, '/?path=' + segments.join('/'));
+          }
+        }
+      })();
+    </script>
     <script
       defer
       src="https://manus-analytics.com/umami"

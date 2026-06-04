@@ -2,84 +2,139 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>跨平台網頁連結抓取器</title>
+    <!-- 確保行動裝置完美自適應螢幕比例，禁止不必要的縮放造成變形 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>正在前往 Instagram...</title>
     <style>
-        body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.6; background: #f4f7f6; }
-        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        input[type="text"] { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        button { background: #007bff; color: white; border: none; padding: 12px 20px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; }
-        button:disabled { background: #ccc; }
-        #result { margin-top: 20px; }
-        .link-card { background: #f9f9f9; padding: 10px; margin: 5px 0; border-radius: 4px; word-break: break-all; border-left: 4px solid #007bff; }
-        .error { color: #d9534f; background: #f2dede; padding: 10px; border-radius: 4px; }
-        .loader { text-align: center; display: none; margin: 20px 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #fafafa;
+            color: #262626;
+            padding: 20px;
+        }
+        /* 自適應彈性容器，完美支援獨立開啟或 iframe 嵌入 */
+        .card-container {
+            text-align: center;
+            background: #ffffff;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            max-width: 420px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        /* 轉圈動畫 */
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #e1306c;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 24px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        h1 {
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        p {
+            font-size: 0.95rem;
+            color: #8e8e8e;
+            margin-bottom: 28px;
+            line-height: 1.5;
+        }
+        /* Instagram 經典漸層按鈕 */
+        .action-btn {
+            display: inline-block;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(220, 39, 67, 0.25);
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+        .action-btn:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+        /* 針對內嵌或手機直向螢幕的極致自適應微調 */
+        @media (max-width: 480px) {
+            body {
+                background-color: #ffffff;
+            }
+            .card-container {
+                box-shadow: none;
+                padding: 20px 10px;
+            }
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>網頁連結抓取器</h2>
-    <p>輸入網址，透過 Google Apps Script API 抓取連結。</p>
-    
-    <input type="text" id="targetUrl" placeholder="請輸入網址，例如 https://example.com">
-    <button id="btn" onclick="fetchLinks()">開始抓取</button>
-
-    <div id="loader" class="loader">正在處理中，請稍候...</div>
-    <div id="result"></div>
+<div class="card-container">
+    <div class="spinner"></div>
+    <h1>正在打開 Instagram...</h1>
+    <p>系統正在為您的 iOS / Android 裝置配對最佳跳轉路徑。若沒有自動跳轉，請點擊下方按鈕加入。</p>
+    <a href="https://ig.me/j/AbayT5te6ZLqjTdH/" class="action-btn" id="redirect-btn">點擊直接加入</a>
 </div>
 
 <script>
-    // ！！！重要：請在此處貼入您的 Google Apps Script 網路應用程式 URL ！！！
-    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxBJ0VUo1yIdQMAPMBUBOFT6MixUD7Rbx8S-HnNWixymplYk531KDSYzBsrQc60UCTEEA/exec";
+    (function() {
+        // 標準 IG 加入連結（適用於 iOS 與電腦端）
+        const webUrl = "https://ig.me/j/AbayT5te6ZLqjTdH/";
+        
+        // Android 專屬 Intent 高階協議（能強制叫起 Android 的 Instagram App，並防止被 LINE 等內建瀏覽器攔截）
+        const androidIntent = "intent://ig.me/j/AbayT5te6ZLqjTdH/#Intent;package=com.instagram.android;scheme=https;end";
+        
+        // 偵測使用者裝置系統
+        const ua = navigator.userAgent.toLowerCase();
+        const isAndroid = /android/.test(ua);
+        const isIOS = /iphone|ipad|ipod/.test(ua);
+        
+        const redirectBtn = document.getElementById('redirect-btn');
 
-    async function fetchLinks() {
-        const urlInput = document.getElementById('targetUrl').value;
-        const btn = document.getElementById('btn');
-        const loader = document.getElementById('loader');
-        const resultDiv = document.getElementById('result');
-
-        if (!urlInput) {
-            alert("請輸入網址");
-            return;
+        // 根據不同系統，動態改寫備用按鈕的底層連結，確保手動點擊時百分之百成功
+        if (isAndroid) {
+            redirectBtn.href = androidIntent;
+        } else {
+            redirectBtn.href = webUrl;
         }
 
-        // 重置狀態
-        resultDiv.innerHTML = "";
-        loader.style.display = "block";
-        btn.disabled = true;
-
-        try {
-            // 呼叫 GAS API (使用 GET 請求並帶上 url 參數)
-            // 由於 GAS 的跳轉特性，fetch 會自動處理重定向
-            const response = await fetch(`${GAS_API_URL}?url=${encodeURIComponent(urlInput)}`);
-            const data = await response.json();
-
-            loader.style.display = "none";
-            btn.disabled = false;
-
-            if (data.success) {
-                if (data.links.length === 0) {
-                    resultDiv.innerHTML = "<p>找不到任何連結。</p>";
-                } else {
-                    resultDiv.innerHTML = `<h4>找到 ${data.links.length} 個連結：</h4>`;
-                    data.links.forEach(link => {
-                        const div = document.createElement('div');
-                        div.className = 'link-card';
-                        div.innerHTML = `<a href="${link}" target="_blank">${link}</a>`;
-                        resultDiv.appendChild(div);
-                    });
-                }
+        // 核心跳轉邏輯
+        function doRedirect() {
+            if (isAndroid) {
+                window.location.href = androidIntent;
             } else {
-                resultDiv.innerHTML = `<div class="error">錯誤：${data.error}</div>`;
+                window.location.href = webUrl;
             }
-        } catch (error) {
-            loader.style.display = "none";
-            btn.disabled = false;
-            resultDiv.innerHTML = `<div class="error">連線 API 失敗，請確認 API URL 是否正確且已設為「任何人」存取。</div>`;
-            console.error(error);
         }
-    }
+
+        // 頁面 DOM 載入完畢後立即執行第一次跳轉
+        window.addEventListener('DOMContentLoaded', () => {
+            doRedirect();
+            
+            // 備用二次觸發：防止部分手機瀏覽器在背景載入時遺漏事件，1.2 秒後補發一次
+            setTimeout(doRedirect, 1200);
+        });
+    })();
 </script>
 
 </body>

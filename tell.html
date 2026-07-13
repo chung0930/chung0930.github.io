@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>發送匿名訊息</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff7b00, #ff007b);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        textarea {
+            width: 100%;
+            height: 120px;
+            border: none;
+            background: #f0f0f0;
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 16px;
+            box-sizing: border-box;
+            resize: none;
+            outline: none;
+            margin-bottom: 20px;
+        }
+        button {
+            background: #111;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.1s;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        .status {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+            min-height: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>傳送匿名訊息給我！</h2>
+    <form id="msgForm">
+        <textarea id="message" placeholder="輸入你想說的話..." required></textarea>
+        <button type="submit" id="submitBtn">發送訊息</button>
+    </form>
+    <div class="status" id="statusBox"></div>
+</div>
+
+<script>
+    // ！！！請將下方的 URL 換成你的 Apps Script Web App URL ！！！
+    const API_URL = "你的_WEB_APP_URL_貼在這裡";
+
+    const form = document.getElementById('msgForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const statusBox = document.getElementById('statusBox');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const message = document.getElementById('message').value;
+        
+        submitBtn.innerText = "發送中...";
+        submitBtn.disabled = true;
+        
+        // 將資料轉換為 Form Data 格式避免 CORS preflight 問題
+        const params = new URLSearchParams();
+        params.append('message', message);
+
+        fetch(API_URL, {
+            method: 'POST',
+            body: params
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                statusBox.innerText = "✅ 訊息已匿名發送！";
+                statusBox.style.color = "green";
+                document.getElementById('message').value = "";
+            } else {
+                statusBox.innerText = "❌ 發送失敗，請稍後再試。";
+                statusBox.style.color = "red";
+            }
+        })
+        .catch(error => {
+            statusBox.innerText = "❌ 發生錯誤：" + error;
+            statusBox.style.color = "red";
+        })
+        .finally(() => {
+            submitBtn.innerText = "發送訊息";
+            submitBtn.disabled = false;
+        });
+    });
+</script>
+
+</body>
+</html>

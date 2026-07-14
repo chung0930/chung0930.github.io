@@ -3,22 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>匿名收件匣</title>
+    <title>匿名收件匣 & 回覆產生器</title>
+    <!-- 引入 html2canvas 幫我們把畫面轉成圖片 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
+        /* 基礎版面樣式 */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f4f7f6;
             margin: 0;
             padding: 20px;
         }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
+        .container { max-width: 600px; margin: 0 auto; }
+        h1 { text-align: center; color: #333; }
+        
+        /* 留言列表卡片 */
         .message-card {
             background: white;
             border-radius: 12px;
@@ -26,23 +25,139 @@
             margin-bottom: 15px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             border-left: 5px solid #ff007b;
+            position: relative;
         }
-        .time {
-            font-size: 12px;
-            color: #888;
-            margin-bottom: 10px;
+        .time { font-size: 12px; color: #888; margin-bottom: 10px; }
+        .content { font-size: 16px; color: #333; line-height: 1.5; word-wrap: break-word; }
+        .loading { text-align: center; color: #666; padding: 20px; }
+        
+        /* 開啟回覆編輯器的按鈕 */
+        .btn-reply {
+            margin-top: 15px;
+            background: #222;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
         }
-        .content {
-            font-size: 16px;
-            color: #333;
-            line-height: 1.5;
+
+        /* --- 編輯器與截圖 Modal 樣式 --- */
+        #editorModal {
+            display: none; /* 預設隱藏 */
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+
+        /* 實際要被截圖轉成圖片的畫布，模擬 IG 限動比例 */
+        #export-canvas {
+            width: 360px;
+            height: 640px;
+            background-color: #1a1a1a;
+            position: relative;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 8px; /* 僅為了預覽好看，截圖出來是方的 */
+        }
+
+        /* NGL 經典卡片樣式 */
+        .ngl-card {
+            width: 80%;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+        .ngl-header {
+            background: linear-gradient(135deg, #ff007b, #ff7b00);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .ngl-body {
+            background: #f4f7f6;
+            color: #111;
+            padding: 30px 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             word-wrap: break-word;
         }
-        .loading {
+
+        /* 使用者的回覆文字 */
+        #canvas-reply-text {
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
             text-align: center;
-            color: #666;
-            padding: 20px;
+            width: 85%;
+            word-wrap: break-word;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+            white-space: pre-wrap; /* 支援換行 */
         }
+
+        /* 底部的 NGL Logo 裝飾 */
+        .ngl-footer {
+            position: absolute;
+            bottom: 30px;
+            text-align: center;
+            color: white;
+        }
+        .ngl-footer-title {
+            font-family: 'Arial Black', sans-serif;
+            font-size: 24px;
+            font-style: italic;
+            letter-spacing: 1px;
+            margin: 0;
+        }
+        .ngl-footer-subtitle {
+            font-size: 12px;
+            opacity: 0.9;
+            font-weight: bold;
+        }
+
+        /* 操作控制面板 (不會被截圖進去) */
+        .control-panel {
+            max-width: 360px;
+            margin: 15px auto;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-sizing: border-box;
+        }
+        .control-panel textarea {
+            width: 100%;
+            height: 60px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            resize: none;
+        }
+        .btn-group { display: flex; gap: 10px; }
+        .btn-group button {
+            flex: 1; padding: 12px; border: none; border-radius: 8px;
+            cursor: pointer; font-weight: bold; font-size: 16px;
+        }
+        .btn-download { background: #4CAF50; color: white; }
+        .btn-close { background: #f44336; color: white; }
     </style>
 </head>
 <body>
@@ -51,6 +166,35 @@
     <h1>📥 匿名收件匣</h1>
     <div id="messagesContainer">
         <div class="loading">載入訊息中...</div>
+    </div>
+</div>
+
+<!-- 圖片編輯與匯出 Modal -->
+<div id="editorModal">
+    <!-- 這個區塊是 html2canvas 會截圖的部分 -->
+    <div id="export-canvas">
+        <div class="ngl-card">
+            <div class="ngl-header">傳匿名訊息給我！</div>
+            <div class="ngl-body" id="canvas-msg-text">
+                <!-- 這裡會動態填入匿名訊息 -->
+            </div>
+        </div>
+        <div id="canvas-reply-text">
+            <!-- 這裡會即時顯示你打的回覆文字 -->
+        </div>
+        <div class="ngl-footer">
+            <p class="ngl-footer-title">NGL</p>
+            <span class="ngl-footer-subtitle">匿名 q&a</span>
+        </div>
+    </div>
+
+    <!-- 這個區塊是用來打字和按下載的，不會出現在圖片中 -->
+    <div class="control-panel">
+        <textarea id="replyInput" placeholder="在這裡輸入你的回覆..."></textarea>
+        <div class="btn-group">
+            <button class="btn-close" onclick="closeEditor()">取消</button>
+            <button class="btn-download" onclick="downloadImage()">下載圖片</button>
+        </div>
     </div>
 </div>
 
@@ -63,7 +207,7 @@
         .then(response => response.json())
         .then(data => {
             const container = document.getElementById('messagesContainer');
-            container.innerHTML = ''; // 清空載入文字
+            container.innerHTML = ''; 
 
             if (data.success) {
                 if (data.data.length === 0) {
@@ -74,12 +218,16 @@
                 data.data.forEach(item => {
                     const date = new Date(item.timestamp);
                     const timeString = date.toLocaleString('zh-TW');
+                    // 將訊息中的換行符號取代成 HTML 的 <br>
+                    const safeMessage = item.message.replace(/</g, "&lt;").replace(/>/g, "&gt;"); 
+                    const displayMessage = safeMessage.replace(/\n/g, '<br>');
                     
                     const card = document.createElement('div');
                     card.className = 'message-card';
                     card.innerHTML = `
                         <div class="time">${timeString}</div>
-                        <div class="content">${item.message.replace(/\n/g, '<br>')}</div>
+                        <div class="content">${displayMessage}</div>
+                        <button class="btn-reply" onclick="openEditor('${encodeURIComponent(safeMessage)}')">產生回覆圖片</button>
                     `;
                     container.appendChild(card);
                 });
@@ -94,6 +242,68 @@
 
     // 頁面載入時執行
     loadMessages();
+
+    // --- 圖片產生器邏輯 ---
+    const editorModal = document.getElementById('editorModal');
+    const canvasMsgText = document.getElementById('canvas-msg-text');
+    const canvasReplyText = document.getElementById('canvas-reply-text');
+    const replyInput = document.getElementById('replyInput');
+
+    // 即時監聽輸入框，同步到畫布上
+    replyInput.addEventListener('input', function() {
+        canvasReplyText.innerText = this.value;
+    });
+
+    // 開啟編輯器
+    function openEditor(encodedMsg) {
+        const msg = decodeURIComponent(encodedMsg);
+        // 設定畫布中的匿名訊息
+        canvasMsgText.innerHTML = msg.replace(/\n/g, '<br>');
+        // 清空之前的回覆
+        replyInput.value = '';
+        canvasReplyText.innerText = '';
+        
+        editorModal.style.display = 'block';
+        // 防止背景滑動
+        document.body.style.overflow = 'hidden'; 
+    }
+
+    // 關閉編輯器
+    function closeEditor() {
+        editorModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    // 將畫布轉為圖片並下載
+    function downloadImage() {
+        const canvasElement = document.getElementById('export-canvas');
+        const downloadBtn = document.querySelector('.btn-download');
+        
+        // 按鈕狀態變更，防止重複點擊
+        const originalText = downloadBtn.innerText;
+        downloadBtn.innerText = '處理中...';
+        downloadBtn.disabled = true;
+
+        html2canvas(canvasElement, {
+            scale: 3, // 提高圖片解析度，讓放到 IG 限動時不模糊
+            backgroundColor: '#1a1a1a', // 確保背景色跟 IG 類似的深灰色
+            useCORS: true
+        }).then(canvas => {
+            // 建立虛擬的 <a> 標籤觸發下載
+            const link = document.createElement('a');
+            link.download = `NGL_Reply_${new Date().getTime()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            
+            // 恢復按鈕狀態
+            downloadBtn.innerText = originalText;
+            downloadBtn.disabled = false;
+        }).catch(err => {
+            alert('圖片產生失敗：' + err);
+            downloadBtn.innerText = originalText;
+            downloadBtn.disabled = false;
+        });
+    }
 </script>
 
 </body>

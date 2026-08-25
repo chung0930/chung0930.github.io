@@ -1,20 +1,68 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-Hant">
 <head>
-    <meta charset="utf-8">
-    <title>      </title>
-    <script type="text/javascript">
-        // 1. 首先，將目前這頁在瀏覽器紀錄中的位置，替換成你想要的「返回目標」
-        // 這樣當使用者按返回時，瀏覽器會認為上一頁是這個網址
-        window.history.replaceState(null, null, "https://chung0930.github.io/chung0930");
-
-        // 2. 接著，使用 location.href 正常跳轉到 Google Sites
-        // 注意：這裡不能用 replace()，必須用 href，才能在歷史紀錄中堆疊一層
-        window.location.href = "WIFI:S:HITRON-A560-5G;T:WPA;P:chung0930;;
-";
-    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wi-Fi 自動連線</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            background: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .wifi-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+            margin-top: 15px;
+        }
+        .wifi-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-      <p>正在跳轉中……</p>
+
+    <div class="container">
+        <h2>正在嘗試連線 Wi-Fi...</h2>
+        <p>如果沒有自動跳轉，請點擊下方按鈕：</p>
+        
+        <a id="wifiLink" class="wifi-btn" href="#">手動連線 Wi-Fi</a>
+    </div>
+
+    <script>
+        const ssid = "HITRON-A560-5G";
+        const password = "chung0930";
+        const encryption = "WPA";
+
+        const wifiString = `WIFI:S:${ssid};T:${encryption};P:${password};;`;
+        
+        const wifiLinkElement = document.getElementById("wifiLink");
+        wifiLinkElement.href = wifiString;
+
+        window.location.href = wifiString;
+    </script>
+
 </body>
 </html>

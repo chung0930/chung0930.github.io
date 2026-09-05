@@ -1,0 +1,81 @@
+<!-- 
+  這是一個獨立的 HTML 區塊，可以嵌入到任何網站的 <body> 內任何位置。
+  它會自動適應父容器，並帶有圓角和陰影的現代化設計。
+-->
+<div id="page-traffic-widget" style="
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: #ffffff;
+    border: 1px solid #e0e4e8;
+    border-radius: 50px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    color: #4b5563;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: default;
+">
+    <!-- 眼睛圖示 (表示瀏覽) -->
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #3b82f6;">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+    </svg>
+    <span>今日人流：</span>
+    <span id="page-traffic-count" style="font-weight: 700; color: #111827;">載入中...</span>
+</div>
+
+<script>
+(function() {
+    // =========================================================================
+    // 【必填】請將下方的字串替換為您部署 Google Apps Script 後取得的「網頁應用程式 URL」
+    // =========================================================================
+    const APPS_SCRIPT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyGEnJRmYbMc6P-AODK5raTULPhwOq9i4yjvT1LPK1_TucMz_yTsgWgmMgZBEqtQ0wcpQ/exec';
+    
+    // 自動獲取當前網頁網址，並排除掉查詢參數 (如 ?utm_source=...) 確保同一頁面統計在一起
+    const currentUrl = window.location.origin + window.location.pathname;
+    const countElement = document.getElementById('page-traffic-count');
+    const widgetElement = document.getElementById('page-traffic-widget');
+
+    // 建立微互動動畫樣式
+    const style = document.createElement('style');
+    style.innerHTML = `
+        @keyframes numberPop {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.3); color: #3b82f6; opacity: 1; }
+            100% { transform: scale(1); color: #111827; }
+        }
+        #page-traffic-widget:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
+        }
+    `;
+    document.head.appendChild(style);
+
+    // 使用 fetch 發送 GET 請求，支援跨域 (CORS)
+    fetch(`${APPS_SCRIPT_WEB_APP_URL}?url=${encodeURIComponent(currentUrl)}`, {
+        method: 'GET',
+        mode: 'cors'
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('網路回應錯誤');
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            // 更新數字並加入動畫
+            countElement.textContent = data.count;
+            countElement.style.animation = "numberPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+        } else {
+            console.error('後端回報錯誤:', data.error);
+            countElement.textContent = '計數異常';
+        }
+    })
+    .catch(error => {
+        console.error('無法連線到人流計數伺服器:', error);
+        countElement.textContent = '離線';
+        countElement.style.color = '#ef4444'; // 錯誤時顯示紅色
+    });
+})();
+</script>

@@ -59,7 +59,7 @@
         mode: 'cors'
     })
     .then(response => {
-        if (!response.ok) throw new Error('網路回應錯誤');
+        if (!response.ok) throw new Error('預期外的回覆錯誤');
         return response.json();
     })
     .then(data => {
@@ -73,8 +73,8 @@
         }
     })
     .catch(error => {
-        console.error('無法連線到人流計數伺服器:', error);
-        countElement.textContent = '離線';
+        console.error('無法連線至伺服器:', error);
+        countElement.textContent = '伺服器離線或伺服器錯誤';
         countElement.style.color = '#ef4444'; // 錯誤時顯示紅色
     });
 })();

@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101311">
+  <meta name="description" content="iPhone 18 Pro Max 12GB+256GB 與 Samsung Galaxy A56 5G 12GB+256GB 規格比較。包含螢幕、相機、RAW、效能、電池與來源查證。">
+  <title>iPhone 18 Pro Max vs Galaxy A56｜RAW 規格比較</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'Noto Sans TC', 'ui-sans-serif', 'system-ui', 'sans-serif'], mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'] },
+          colors: { ink: '#111512', lime: '#d7ff64', paper: '#f0f1e9', muted: '#9ea69e' },
+          boxShadow: { glass: '0 24px 90px rgba(0,0,0,.32)' }
+        }
+      }
+    };
+  </script>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #101311; color: #f0f1e9; font-family: Inter, "Noto Sans TC", ui-sans-serif, system-ui, sans-serif; }
+    body::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 20; opacity: .11; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.92' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.27'/%3E%3C/svg%3E"); mix-blend-mode: soft-light; }
+    .mesh { background: radial-gradient(ellipse at 15% 18%, rgba(215,255,100,.12), transparent 32%), radial-gradient(ellipse at 85% 24%, rgba(159,190,255,.12), transparent 34%), radial-gradient(ellipse at 50% 92%, rgba(255,255,255,.055), transparent 48%), #101311; }
+    .glass { background: linear-gradient(135deg, rgba(255,255,255,.105), rgba(255,255,255,.035)); border: 1px solid rgba(255,255,255,.14); box-shadow: 0 24px 90px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.09); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+    .glass-soft { background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.09); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+    .raw-grid { background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px); background-size: 34px 34px; mask-image: linear-gradient(to bottom, black, transparent 85%); }
+    .raw-tag { border: 1px solid rgba(215,255,100,.65); color: #d7ff64; letter-spacing: .22em; }
+    .text-gradient { background: linear-gradient(105deg,#f6f7f1 5%,#c7d7a1 49%,#d7ff64 90%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .phone { width: 116px; height: 220px; border: 1px solid rgba(255,255,255,.34); border-radius: 29px; position: relative; overflow: hidden; box-shadow: 0 22px 50px rgba(0,0,0,.42), inset 0 0 0 4px rgba(0,0,0,.42); transform: rotate(-5deg); }
+    .phone::after { content:""; position:absolute; inset:7px; border:1px solid rgba(255,255,255,.12); border-radius:23px; pointer-events:none; }
+    .phone-apple { background: radial-gradient(circle at 80% 18%,rgba(255,255,255,.6),transparent 22%), linear-gradient(145deg,#a3aaa5,#343a36 45%,#111513); }
+    .phone-samsung { background: radial-gradient(circle at 20% 78%,rgba(226,255,186,.22),transparent 31%), linear-gradient(155deg,#68765b,#202820 52%,#111513); transform: rotate(5deg); }
+    .screen { position:absolute; inset:7px; border-radius:23px; background: linear-gradient(155deg,rgba(0,0,0,.2),rgba(0,0,0,.72)),radial-gradient(ellipse at 70% 20%,rgba(215,255,100,.45),transparent 40%),linear-gradient(145deg,#92a18d,#18201b); }
+    .island { position:absolute; width:38px;height:10px;left:50%;top:9px;transform:translateX(-50%);border-radius:12px;background:#080a09;z-index:2; }
+    .lens-cluster { position:absolute; top:15px;left:14px;width:62px;height:72px;border-radius:20px;background:rgba(13,16,14,.76);border:1px solid rgba(255,255,255,.16);padding:8px;display:grid;grid-template-columns:repeat(2,1fr);gap:5px;z-index:3; }
+    .lens { border-radius:50%; background: radial-gradient(circle at 35% 30%,#dce8dc 0 6%,#647b72 9%,#13211d 35%,#050706 70%); border:2px solid #414a43; }
+    .float { animation: float 6s ease-in-out infinite; }
+    .float-delay { animation: float 6s ease-in-out 1.3s infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0) rotate(var(--r,0deg))} 50%{transform:translateY(-10px) rotate(var(--r,0deg))} }
+    .scan { background: linear-gradient(90deg,transparent,rgba(215,255,100,.42),transparent); animation: scan 6s ease-in-out infinite; }
+    @keyframes scan { 0%,100%{transform:translateX(-140%)} 50%{transform:translateX(140%)} }
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .metric-line { background: linear-gradient(90deg,rgba(215,255,100,.95),rgba(215,255,100,.12)); }
+    .rule { background: linear-gradient(90deg,rgba(215,255,100,.55),rgba(255,255,255,.06),transparent); height:1px; }
+    .source-link { color:#d7ff64; text-decoration: underline; text-decoration-color: rgba(215,255,100,.3); text-underline-offset: 3px; }
+    .source-link:hover { text-decoration-color:#d7ff64; }
+    @media (prefers-reduced-motion: reduce) { *,*::before,*::after { animation-duration:.01ms!important; animation-iteration-count:1!important; scroll-behavior:auto!important; transition-duration:.01ms!important; } .reveal {opacity:1;transform:none;} }
+  </style>
+</head>
+<body class="antialiased">
+  <div class="mesh min-h-screen overflow-hidden">
+    <header class="relative isolate">
+      <div class="raw-grid absolute inset-0 -z-10"></div>
+      <nav class="mx-auto flex max-w-7xl items-center justify-between px-5 py-6 md:px-10">
+        <a href="#top" class="flex items-center gap-3 text-xs font-semibold tracking-[.2em] text-white/80"><span class="grid h-8 w-8 place-items-center rounded-full border border-white/20 text-[10px] text-lime">R/</span> FIELD NOTES <span class="hidden text-white/35 sm:inline">· DEVICE STUDY 026</span></a>
+        <a href="#specs" class="rounded-full border border-white/15 px-4 py-2 text-xs text-white/70 transition hover:border-lime/60 hover:text-lime">查看規格 ↓</a>
+      </nav>
+      <main id="top" class="mx-auto max-w-7xl px-5 pb-20 pt-10 md:px-10 md:pt-16">
+        <div class="grid items-center gap-12 lg:grid-cols-[1.08fr_.92fr]">
+          <div class="relative z-10">
+            <div class="mb-7 flex items-center gap-3"><span class="raw-tag rounded-full px-3 py-1.5 font-mono text-[10px]">RAW / 02 — 07 OCT 2026</span><span class="font-mono text-[10px] tracking-[.16em] text-white/35">SPEC CHECKED</span></div>
+            <p class="mb-4 font-mono text-[11px] uppercase tracking-[.34em] text-white/45">Flagship × Midrange / 12 + 256</p>
+            <h1 class="max-w-3xl text-5xl font-semibold leading-[1.03] tracking-[-.055em] md:text-7xl"><span class="text-gradient">規格對照，</span><br>不只看數字。</h1>
+            <p class="mt-7 max-w-xl text-base leading-8 text-white/65 md:text-lg">iPhone 18 Pro Max 與 Samsung Galaxy A56 5G。聚焦 12GB + 256GB 配置、相機與 RAW 工作流；每個關鍵數字都附上來源層級。</p>
+            <div class="mt-9 flex flex-wrap gap-3">
+              <a href="#specs" class="rounded-full bg-lime px-5 py-3 text-sm font-semibold text-ink transition hover:scale-[1.03]">開始比較 <span aria-hidden="true">↘</span></a>
+              <a href="#sources" class="rounded-full border border-white/15 px-5 py-3 text-sm text-white/75 transition hover:bg-white/5">查證來源</a>
+            </div>
+            <div class="mt-12 grid max-w-lg grid-cols-3 gap-4 border-t border-white/10 pt-5">
+              <div><div class="font-mono text-2xl text-lime">6.9″</div><div class="mt-1 text-[11px] text-white/45">iPhone 螢幕</div></div>
+              <div><div class="font-mono text-2xl text-lime">48 MP</div><div class="mt-1 text-[11px] text-white/45">三鏡頭皆高畫素</div></div>
+              <div><div class="font-mono text-2xl text-lime">RAW</div><div class="mt-1 text-[11px] text-white/45">ProRAW / DNG</div></div>
+            </div>
+          </div>
+          <div class="relative flex min-h-[370px] items-center justify-center lg:min-h-[510px]">
+            <div class="absolute h-64 w-64 rounded-full bg-lime/10 blur-[90px]"></div>
+            <div class="absolute right-[10%] top-[16%] h-44 w-44 rounded-full bg-blue-200/10 blur-[75px]"></div>
+            <div class="glass absolute inset-x-6 top-[17%] mx-auto h-[67%] max-w-[440px] rounded-[2.5rem] opacity-45"></div>
+            <div class="absolute left-[12%] top-[14%] font-mono text-[9px] tracking-[.18em] text-white/35">01 — OPTICS / CONTROL</div>
+            <div class="phone phone-apple float absolute left-[20%] top-[18%] z-10" style="--r:-5deg"><div class="screen"></div><div class="island"></div><div class="lens-cluster"><i class="lens"></i><i class="lens"></i><i class="lens"></i></div><div class="absolute bottom-7 left-3 right-3 z-[4] font-mono text-[7px] tracking-[.16em] text-white/70">PRO FUSION</div></div>
+            <div class="phone phone-samsung float-delay absolute right-[18%] top-[31%] z-0" style="--r:5deg"><div class="screen"></div><div class="lens-cluster !left-[17px] !top-[16px] !h-[66px] !w-[27px] !grid-cols-1 !gap-1 !rounded-[14px] !p-[5px]"><i class="lens"></i><i class="lens"></i><i class="lens"></i></div><div class="absolute bottom-7 left-3 right-3 z-[4] font-mono text-[7px] tracking-[.16em] text-white/70">AWESOME / 5G</div></div>
+            <div class="absolute bottom-[12%] left-[8%] right-[8%] h-px overflow-hidden bg-white/10"><div class="scan h-px w-1/3"></div></div>
+            <div class="glass-soft absolute bottom-[3%] right-[4%] rounded-xl px-4 py-3 font-mono text-[9px] leading-5 text-white/65"><span class="text-lime">RAW LOG 026</span><br>verified / cited / regional SKU</div>
+          </div>
+        </div>
+        <div class="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-[10px] tracking-[.08em] text-white/40"><span>更新基準：2026.10.07</span><span>·</span><span>區域 SKU 可能不同</span><span>·</span><span>RAM 標示層級見下方註記</span></div>
+      </main>
+    </header>
+
+    <section id="specs" class="mx-auto max-w-7xl px-5 pb-20 md:px-10">
+      <div class="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+        <div><p class="font-mono text-[10px] tracking-[.25em] text-lime">01 / SPEC MATRIX</p><h2 class="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">同容量，不同定位</h2></div>
+        <p class="max-w-lg text-sm leading-6 text-white/45">以下皆以 12GB RAM + 256GB 儲存版本為比較基準。iPhone 的 RAM 不是 Apple 公布的規格，請留意標記。</p>
+      </div>
+      <div class="grid gap-4 lg:grid-cols-[1fr_1fr]">
+        <article class="glass reveal overflow-hidden rounded-[2rem] p-6 md:p-8">
+          <div class="flex items-start justify-between gap-4"><div><div class="font-mono text-[10px] tracking-[.22em] text-lime">APPLE / PRO LINE</div><h3 class="mt-3 text-2xl font-semibold">iPhone 18 Pro Max</h3><p class="mt-1 text-sm text-white/45">12GB* + 256GB</p></div><span class="rounded-full border border-lime/35 bg-lime/10 px-3 py-1.5 font-mono text-[10px] text-lime">PRO / RAW</span></div>
+          <div class="my-7 rule"></div>
+          <dl class="space-y-4 text-sm">
+            <div class="flex justify-between gap-4"><dt class="text-white/45">晶片</dt><dd class="text-right font-medium">Apple A20 Pro <a class="source-link text-xs" href="https://support.apple.com/en-us/148591" target="_blank" rel="noreferrer">[A]</a></dd></div>
+            <div class="flex justify-between gap-4"><dt class="text-white/45">螢幕</dt><dd class="text-right">6.9″ OLED · 2868 × 1320 · 460 ppi</dd></div>
+            <div class="flex justify-between gap-4"><dt class="text-white/45">更新率 / 亮度</dt><dd class="text-right">ProMotion 最高 120Hz · 戶外峰值 3000 nits</dd></div>
+            <div class="flex justify-between gap-4"><dt class="text-white/45">後鏡頭</dt><dd class="max-w-[70%] text-right">48MP 主鏡（可變光圈）+ 48MP 超廣角 + 48MP 望遠</dd></div>
+            <div class="flex justify-between gap-4"><dt class="text-white/45">望遠 / 變焦</dt><dd class="text-right">4× 光學望遠 · 最高 8× 光學品質變焦</dd></div>
+            <div class="flex justify-between gap-4"><dt class="text-white/45">RAW</dt><dd class="text-right font-medium text-lime">Apple ProRAW · DNG · ProRes RAW</dd></div>
+            <div class="flex justify-between gap-4"><dt class="text-white/45">影片</dt><dd class="max-w-[70%] text-right">最高 4K Dolby Vision 120fps（主鏡）；ProRes 最高 4K 120fps 外接錄製</dd></div>
+            <div class="flex justify-between gap-4"><dt class="text-white/45">續航 / 充電</dt><dd class="max-w-[70%] text-right">影片播放最長 45 小時；相容 60W 以上轉接器約 15 分鐘充至 50%</dd></div>
+            <div class="flex justify-between gap-4"><dt class="text-white/45">機身 / 防護</dt><dd class="text-right">163.4 × 78 × 8.75mm · 249g · IP68（最深 6m / 30 分）</dd></div>
+            <div class="flex justify-between gap-4"><dt class="text-white/45">作業系統</dt><dd class="text-right">iOS</dd></div>
+          </dl>
+          <div class="mt-6 rounded-2xl border border-white/10 bg-black/15 p-4 text-xs leading-6 text-white/55"><span class="font-semibold text-lime">* RAM 說明：</span>Apple 官方技術規格頁未列 RAM。12GB 是第三方規格資料所列，不應視為 Apple 官方確認；256GB 容量則由 Apple 官規確認。<a href="https://www.gsmarena.com/apple_iphone_18_pro_max-14716.php" target="_blank" rel="noreferrer" class="source-link">GSMArena 記憶體資料 [G]</a> · <a href="https://www.apple.com/iphone-18-pro/specs/" target="_blank" rel="noreferrer" class="source-link">Apple 官規 [A]</a></div>
+        </article>
+        <article class="glass reveal overflow-hidden rounded-[2rem] p-6 md:p-8" style="transition-delay:120ms">
+          <div class="flex items-start justify-between gap-4"><div><div class="font-mono text-[10px] tracking-[.22em] text-white/55">SAMSUNG / GALAXY A</div><h3 class="mt-3 text-2xl font-semibold">Galaxy A56 5G</h3><p class="mt-1 text-sm text-white/45">12GB + 256GB · 印度／香港官方版本</p></div><span class="rounded-full border border-white/20 bg-white/5 px-3 py-1.5 font-mono text-[10px] text-white/65">A SERIES / 5G</span></div>
+          <div class="my-7 rule"></div>
+          <dl class="space-y-4 text-sm">
+            <div class="flex justify-between gap-4"><dt class="text-white/45">晶片</dt><dd class="text-right font-medium">Exynos 1580 · 4nm · 八核心</dd></div>
+            <div class="flex justify-between gap-4"><dt class="text-white/45">螢幕</dt><dd class="text-right">6.7″ Super AMOLED · 2340 × 1080</dd></div>
+            <div class="flex justify-between gap-4"><dt class="text-white/45">更新率 / 亮度</dt><dd class="text-right">最高 120Hz · Vision Booster 最高 1200 nits</dd></div>
+            <div class="flex justify-between gap-4"><dt class="text-white/45">後鏡頭</dt><dd class="max-w-[70%] text-right">50MP 主鏡（OIS）+ 12MP 超廣角 + 5MP 微距</dd></div>
+            <div class="flex justify-between gap-4"><dt class="text-white/45">前鏡頭</dt><dd class="text-right">12MP · f/2.2</dd></div>
+            <div class="flex justify-between gap-4"><dt class="text-white/45">RAW</dt><dd class="max-w-[70%] text-right">官方規格未列 ProRAW / DNG；不據此推定完全不支援</dd></div>
+            <div class="flex justify-between gap-4"><dt class="text-white/45">影片</dt><dd class="text-right">最高 UHD 4K（3840 × 2160）30fps</dd></div>
+            <div class="flex justify-between gap-4"><dt class="text-white/45">電池 / 充電</dt><dd class="text-right">5000mAh（典型）· 45W 有線快充</dd></div>
+            <div class="flex justify-between gap-4"><dt class="text-white/45">機身 / 防護</dt><dd class="text-right">162.2 × 77.5 × 7.4mm · 198g · IP67（最深 1m / 30 分）</dd></div>
+            <div class="flex justify-between gap-4"><dt class="text-white/45">軟體支援</dt><dd class="text-right">最多 6 代 OS 升級 + 6 年安全更新*</dd></div>
+          </dl>
+          <div class="mt-6 rounded-2xl border border-white/10 bg-black/15 p-4 text-xs leading-6 text-white/55"><span class="font-semibold text-white/80">地區版本：</span>Samsung 印度產品頁與香港上市稿均列出 12GB RAM + 256GB ROM。規格、頻段、更新時程與配色可能依市場而異；A56 的電池播放時間採廠商測試估算，不宜與 iPhone 數字視為同條件測試。</div>
+        </article>
+      </div>
+      <p class="mt-3 text-[10px] leading-5 text-white/35">* Samsung 表示最多 6 代 OS 升級與 6 年安全更新，實際供應與時程可能因型號、國家／地區而不同。所有 IP 防護數值均為實驗室條件；不等同建議浸水使用。</p>
+    </section>
+
+    <section class="mx-auto max-w-7xl px-5 pb-20 md:px-10">
+      <div class="mb-8"><p class="font-mono text-[10px] tracking-[.25em] text-lime">02 / FIELD READOUT</p><h2 class="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">差異在哪裡？</h2></div>
+      <div class="grid gap-4 md:grid-cols-3">
+        <article class="glass-soft reveal rounded-[1.7rem] p-6"><div class="font-mono text-xs text-lime">01 — RAW WORKFLOW</div><h3 class="mt-4 text-xl font-semibold">要編 RAW，選擇更明確</h3><p class="mt-3 text-sm leading-7 text-white/55">Apple 明列 ProRAW 照片與 DNG 格式，也列出 ProRes RAW 影片。A56 官方規格未寫明 RAW／DNG 輸出；若 RAW 是必要條件，請先向當地 Samsung 支援確認相機 App 與第三方 App 的實際格式。</p></article>
+        <article class="glass-soft reveal rounded-[1.7rem] p-6" style="transition-delay:100ms"><div class="font-mono text-xs text-lime">02 — DISPLAY & BODY</div><h3 class="mt-4 text-xl font-semibold">大螢幕、重量取向不同</h3><p class="mt-3 text-sm leading-7 text-white/55">iPhone 面板大 0.2 吋、解析度較高，且機身重 51g。A56 更薄、更輕；兩款更新率都最高 120Hz。峰值亮度宣稱與測試口徑不同，數字僅列原廠標示，不是同場實測。</p><div class="mt-5 h-1.5 overflow-hidden rounded-full bg-white/10"><div class="metric-line h-full w-[74%] rounded-full"></div></div><div class="mt-2 flex justify-between font-mono text-[9px] text-white/35"><span>重量差 51g</span><span>iPhone 249g / A56 198g</span></div></article>
+        <article class="glass-soft reveal rounded-[1.7rem] p-6" style="transition-delay:200ms"><div class="font-mono text-xs text-lime">03 — CAMERA HARDWARE</div><h3 class="mt-4 text-xl font-semibold">焦段與解析度路線不同</h3><p class="mt-3 text-sm leading-7 text-white/55">iPhone 三顆後鏡頭都是 48MP，含可變光圈主鏡與 4× 望遠，且提供最高 8×「光學品質」變焦。A56 使用 50MP 主鏡 + 超廣角 + 微距，主鏡有 OIS；主打實用三鏡頭配置。</p></article>
+      </div>
+    </section>
+
+    <section class="mx-auto max-w-7xl px-5 pb-24 md:px-10">
+      <div class="glass reveal relative overflow-hidden rounded-[2rem] p-6 md:p-10">
+        <div class="absolute -right-8 -top-12 font-mono text-[170px] font-black leading-none text-white/[.025] md:text-[240px]">RAW</div>
+        <div class="relative grid gap-8 md:grid-cols-[.78fr_1.22fr] md:items-center">
+          <div><p class="font-mono text-[10px] tracking-[.25em] text-lime">03 / QUICK TAKE</p><h2 class="mt-3 text-3xl font-semibold">快速結論</h2><p class="mt-3 max-w-sm text-sm leading-7 text-white/50">先按優先順序選，不要只用 RAM 和儲存容量判斷。</p></div>
+          <div class="grid gap-3 sm:grid-cols-2">
+            <div class="rounded-2xl border border-lime/20 bg-lime/[.06] p-5"><div class="font-mono text-[10px] tracking-[.18em] text-lime">選 iPHONE</div><p class="mt-3 text-sm leading-6 text-white/75">重視 ProRAW／DNG、望遠、錄影規格、最高亮度與較長的官方影片播放續航。</p></div>
+            <div class="rounded-2xl border border-white/10 bg-white/[.035] p-5"><div class="font-mono text-[10px] tracking-[.18em] text-white/55">選 GALAXY A56</div><p class="mt-3 text-sm leading-6 text-white/75">重視輕薄、12GB + 256GB 有官網明確 SKU、三鏡頭日常彈性、5000mAh 電池與 Android 更新承諾。</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer id="sources" class="border-t border-white/10 bg-black/15">
+      <div class="mx-auto max-w-7xl px-5 py-12 md:px-10">
+        <div class="grid gap-10 md:grid-cols-[.65fr_1.35fr]">
+          <div><p class="font-mono text-[10px] tracking-[.25em] text-lime">SOURCE REGISTER</p><h2 class="mt-3 text-2xl font-semibold">來源與查證註記</h2><p class="mt-3 max-w-sm text-xs leading-6 text-white/40">優先採用 Apple、Samsung 官方資料。第三方資料僅用於填補官方未公開欄位，並明確標出層級。</p></div>
+          <ol class="space-y-4 text-xs leading-6 text-white/55">
+            <li><span class="mr-2 font-mono text-lime">[A]</span><a class="source-link" href="https://support.apple.com/en-us/148591" target="_blank" rel="noreferrer">Apple Support — iPhone 18 Pro Max 技術規格</a><br><span class="text-white/35">核對 256GB 容量、顯示器、相機、ProRAW／DNG、影片、續航、尺寸、重量與 IP68。Apple 官規未列 RAM。</span></li>
+            <li><span class="mr-2 font-mono text-lime">[B]</span><a class="source-link" href="https://www.apple.com/iphone-18-pro/specs/" target="_blank" rel="noreferrer">Apple — iPhone 18 Pro 技術規格</a><br><span class="text-white/35">與 Apple Support 規格頁交叉核對容量、顯示器及 Pro 相機特色。</span></li>
+            <li><span class="mr-2 font-mono text-lime">[C]</span><a class="source-link" href="https://www.samsung.com/in/smartphones/galaxy-a/galaxy-a56-5g-awesome-graphite-256gb-sm-a566ezkhins/" target="_blank" rel="noreferrer">Samsung India — Galaxy A56 5G 12GB／256GB 產品頁</a><br><span class="text-white/35">直接核對 12GB RAM、256GB 儲存、可用儲存、螢幕、相機、電池、機身與軟體支援。</span></li>
+            <li><span class="mr-2 font-mono text-lime">[D]</span><a class="source-link" href="https://www.samsung.com/hk_en/news/product/introducing-new-galaxy-a56-5g-and-a36-5g/" target="_blank" rel="noreferrer">Samsung Hong Kong — A56 5G 官方上市稿與規格表</a><br><span class="text-white/35">第二個 Samsung 官方來源，交叉核對 12GB + 256GB、Exynos 1580、相機、快充、尺寸與重量。</span></li>
+            <li><span class="mr-2 font-mono text-lime">[E]</span><a class="source-link" href="https://www.samsung.com/uk/smartphones/galaxy-a/galaxy-a56-5g-awesome-lightgrey-256gb-sm-a566bzaceub/" target="_blank" rel="noreferrer">Samsung UK — Galaxy A56 5G 官方產品頁</a><br><span class="text-white/35">再核對 6 代 OS 升級、6 年安全更新、IP67、45W 充電與相機／電池功能。</span></li>
+            <li><span class="mr-2 font-mono text-lime">[F]</span><a class="source-link" href="https://www.cnet.com/tech/mobile/iphone-18-pro-max-review/" target="_blank" rel="noreferrer">CNET — iPhone 18 Pro Max 評測及規格對照</a><br><span class="text-white/35">其規格表將 iPhone RAM 標為 N/A；用來佐證 Apple 沒有在公開規格中列 RAM。</span></li>
+            <li><span class="mr-2 font-mono text-lime">[G]</span><a class="source-link" href="https://www.gsmarena.com/apple_iphone_18_pro_max-14716.php" target="_blank" rel="noreferrer">GSMArena — iPhone 18 Pro Max 第三方規格表</a><br><span class="text-white/35">第三方來源列出 12GB RAM；Apple 官規未公開，故頁面只把它當作所比較版本的第三方標示，不宣稱為 Apple 官規。</span></li>
+            <li><span class="mr-2 font-mono text-lime">[H]</span><a class="source-link" href="https://www.gsmarena.com/samsung_galaxy_a56-13603.php" target="_blank" rel="noreferrer">GSMArena — Samsung Galaxy A56 第三方規格表</a><br><span class="text-white/35">非官方補充來源，用於核對公開的第三方規格資料；核心數據以 Samsung 官網為準。</span></li>
+          </ol>
+        </div>
+        <div class="mt-10 flex flex-col justify-between gap-3 border-t border-white/10 pt-5 font-mono text-[9px] tracking-[.1em] text-white/30 sm:flex-row"><span>FACTS FIRST · REGIONAL MODEL CAUTION</span><span>RESEARCH SNAPSHOT / 2026.10.07</span></div>
+      </div>
+    </footer>
+  </div>
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+  </script>
+</body>
+</html>
